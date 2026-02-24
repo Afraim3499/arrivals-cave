@@ -1,0 +1,57 @@
+[
+  {
+    "id": "5c44cef7-c782-40d8-8517-b11a231361a5",
+    "slug": "eid-collection-2026",
+    "title": "Eid Collection 2026",
+    "description": "Exclusive Panjabis for Eid",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-18T03:30:29.239789+00:00",
+    "title_bn": "ঈদ কালেকশন ২০২৬",
+    "description_bn": "ঈদের জন্য বিশেষ পাঞ্জাবি"
+  },
+  {
+    "id": "e49f79c0-ac37-4c96-8eb9-70ff73bf2f9a",
+    "slug": "new-arrivals",
+    "title": "New Arrivals",
+    "description": "Latest designs",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-18T03:30:29.239789+00:00",
+    "title_bn": "নতুন কালেকশন",
+    "description_bn": "সর্বশেষ ডিজাইন"
+  },
+  {
+    "id": "4f5fc851-e338-4c57-8f4f-a392e7c988b9",
+    "slug": "premium-panjabi",
+    "title": "Premium Panjabi",
+    "description": "Luxury fabrics and craftsmanship",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-18T03:30:29.239789+00:00",
+    "title_bn": "প্রিমিয়াম পাঞ্জাবি",
+    "description_bn": "বিলাসবহুল ফ্যাব্রিক এবং কারিগরি"
+  },
+  {
+    "id": "24532aa4-2970-45d7-88e6-4cdfe70a24f0",
+    "slug": "kabli-sets",
+    "title": "Kabli Sets",
+    "description": "Traditional Kabli sets",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-18T03:30:29.239789+00:00",
+    "title_bn": "কাবলি সেট",
+    "description_bn": "ঐতিহ্যবাহী কাবলি সেট"
+  },
+  {
+    "id": "6f78d1eb-6af6-4190-8479-20f7acdb77fc",
+    "slug": "waistcoats",
+    "title": "Waistcoats",
+    "description": "Stylish waistcoats",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-18T03:30:29.239789+00:00",
+    "title_bn": "কোটি / কটি",
+    "description_bn": "স্টাইলিশ কোটি"
+  }
+]
