@@ -102,7 +102,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
     };
 
     const handleWhatsAppConfirm = () => {
-        const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801751299259";
+        const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com";
         const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
 
