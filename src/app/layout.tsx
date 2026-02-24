@@ -32,6 +32,22 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   manifest: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com"}/manifest.webmanifest`,
+  openGraph: {
+    title: "Arrivals Cave – Premium Panjabi Collection",
+    description: "Shop premium panjabi collection in Bangladesh. Order via WhatsApp. Nationwide delivery.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com",
+    siteName: "Arrivals Cave",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com"}/images/hero/eid_collection_from_arrivals_cave.webp`,
+        width: 1200,
+        height: 630,
+        alt: "Arrivals Cave Eid Collection",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
