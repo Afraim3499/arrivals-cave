@@ -70,9 +70,10 @@ export function buildWhatsAppMessage(order: WhatsAppOrderData): string {
 
 export function buildWhatsAppURL(message: string): string {
     const encoded = encodeURIComponent(message);
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801751299259";
+    // Use process.env but fallback to default if not set
+    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
 
-    // WhatsApp URL length limit ~4000-8000 chars depending on platform
+    // Standardize number formath limit ~4000-8000 chars depending on platform
     // We'll truncate at 4000 to be safe
     let finalEncoded = encoded;
     if (encoded.length > 4000) {

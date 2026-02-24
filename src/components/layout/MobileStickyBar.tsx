@@ -103,9 +103,9 @@ export function MobileStickyBar() {
                         </Button>
                         <div className="flex-1" />
                         <Button
-                            variant="outline"
-                            className="border-green-500 text-green-500 hover:bg-green-500/10 flex flex-col gap-1 h-auto"
-                            onClick={() => window.open("https://wa.me/8801751299259", "_blank")}
+                            size="lg"
+                            className="bg-whatsapp hover:bg-whatsapp-hover text-white flex-1 font-bold shadow-glow"
+                            onClick={() => window.open("https://wa.me/8801626748116", "_blank")}
                         >
                             <MessageSquare className="h-5 w-5" />
                             <span className="text-[10px] uppercase font-bold">WhatsApp</span>

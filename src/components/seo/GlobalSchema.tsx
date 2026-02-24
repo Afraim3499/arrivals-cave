@@ -9,7 +9,7 @@ export function GlobalSchema() {
         "url": siteUrl,
         "logo": `${siteUrl}/logo.png`,
         "email": "arrivalscave@gmail.com",
-        "telephone": "+8801751-299259",
+        "telephone": "+8801626748116",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "G/D 13 No. Road, Chandgaon Residential Area",
@@ -20,7 +20,7 @@ export function GlobalSchema() {
         },
         "contactPoint": {
             "@type": "ContactPoint",
-            "telephone": "+8801751-299259",
+            "telephone": "+8801626748116",
             "contactType": "customer service",
             "areaServed": "BD",
             "availableLanguage": ["en", "Bengali"]
