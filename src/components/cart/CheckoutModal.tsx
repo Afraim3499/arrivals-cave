@@ -76,7 +76,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         }
         // Fallback WhatsApp message logic if backend saving fails but we still want to let them order
         const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com";
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
         const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
 
         let message = `*New Order Confirmed (#${orderId})*\n\n`;
@@ -103,7 +103,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
 
     const handleWhatsAppConfirm = () => {
         const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com";
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
         const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
 
         let message = `*New Order Confirmed (#${orderId})*\n\n`;

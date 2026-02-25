@@ -20,13 +20,15 @@ export function generatePageMeta(options: {
     locale: string;
     image?: string;
     type?: "website" | "article";
+    keywords?: string[];
 }): Metadata {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscave.com";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscavebd.com";
     const fullTitle = options.title.length <= 60 ? options.title : options.title.slice(0, 57) + "...";
 
     return {
         title: fullTitle,
         description: options.description.slice(0, 160),
+        keywords: options.keywords,
         alternates: {
             canonical: `${baseUrl}/${options.locale}${options.path}`,
             languages: {
@@ -47,8 +49,9 @@ export function generatePageMeta(options: {
     };
 }
 
+
 export function generateHreflangMetadata(currentPath: string) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscave.com";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscavebd.com";
 
     // Normalize path (ensure it starts with /)
     const normalizedPath = currentPath.startsWith('/') ? currentPath : `/${currentPath}`;

@@ -3,7 +3,7 @@ import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
 import { routing } from "@/i18n/routing";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscave.com";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscavebd.com";
     const supabase = createPublicSupabaseClient();
     const locales = routing.locales;
 

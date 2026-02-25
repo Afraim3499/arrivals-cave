@@ -1,5 +1,5 @@
 export function GlobalSchema() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
 
     // Organization Schema (connects social media, branding, contacts, location)
     const orgSchema = {

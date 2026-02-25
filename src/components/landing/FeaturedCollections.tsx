@@ -32,7 +32,7 @@ export async function FeaturedCollections() {
         {
             id: 'muraqsh',
             title: 'Muraqsh',
-            image_url: '/products/nehaj-mn-2003/NEHAJ.webp',
+            image_url: '/products/nehaj-mn-2003/2.webp',
             link: '/shop/muraqsh',
             spanClass: 'col-span-1 md:col-span-2 lg:col-span-4',
             aspectRatio: 'aspect-square'
@@ -40,7 +40,7 @@ export async function FeaturedCollections() {
         {
             id: 'zameen',
             title: 'Zameen',
-            image_url: '/products/sabzar-zs-3002/SABZAR.webp',
+            image_url: '/products/sabzar-zs-3002/2.webp',
             link: '/shop/zameen',
             spanClass: 'col-span-1 md:col-span-2 lg:col-span-4',
             aspectRatio: 'aspect-square'
@@ -48,7 +48,7 @@ export async function FeaturedCollections() {
         {
             id: 'sirash',
             title: 'Sirash',
-            image_url: '/products/shahan-ss-4002/SHAHAN.webp',
+            image_url: '/products/shahan-ss-4002/3.webp',
             link: '/shop/sirash',
             spanClass: 'col-span-2 md:col-span-2 lg:col-span-4',
             aspectRatio: 'aspect-square'

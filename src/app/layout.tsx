@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "Shop premium panjabi collection in Bangladesh. Order via WhatsApp. Nationwide delivery.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com"
   ),
   icons: {
     icon: [
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-  manifest: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com"}/manifest.webmanifest`,
+  manifest: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com"}/manifest.webmanifest`,
   openGraph: {
     title: "Arrivals Cave – Premium Panjabi Collection",
     description: "Shop premium panjabi collection in Bangladesh. Order via WhatsApp. Nationwide delivery.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com",
     siteName: "Arrivals Cave",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscave.com"}/images/hero/eid_collection_from_arrivals_cave.webp`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com"}/images/hero/eid_collection_from_arrivals_cave.webp`,
         width: 1200,
         height: 630,
         alt: "Arrivals Cave Eid Collection",

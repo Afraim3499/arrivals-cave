@@ -4,7 +4,7 @@ type Product = Database["public"]["Tables"]["products"]["Row"];
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 type SEOLandingPage = Database["public"]["Tables"]["seo_landing_pages"]["Row"];
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscave.com";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://arrivalscavebd.com";
 
 /**
  * Generate Product JSON-LD
@@ -81,26 +81,86 @@ export function generateCollectionJsonLd(collection: any, products: Product[], l
 }
 
 /**
- * Generate BlogPosting JSON-LD
+ * Generate God-Tier BlogPosting JSON-LD
  */
-export function generateBlogJsonLd(post: BlogPost, locale: string = "en") {
+export function generateBlogJsonLd(post: BlogPost, locale: string = "en", faqItems?: { question: string; answer: string }[]) {
     const isEN = locale === "en";
-    return {
+    const title = isEN ? post.title : (post.title_bn || post.title);
+
+    // Define the Expert Author Entity
+    const expertAuthor = {
+        "@type": "Person",
+        "@id": `${baseUrl}/#expert-author`,
+        "name": "Arrivals Cave Field Research Team",
+        "jobTitle": "Lead Fashion Research & Design",
+        "description": "The Arrivals Cave Field Research Team specializes in tropical fabric science and modern Panjabi tailoring for the South Asian market.",
+        "url": baseUrl,
+        "image": `${baseUrl}/images/brand/design-team.webp`,
+        "sameAs": [
+            "https://www.instagram.com/arrivals_cave/",
+            "https://www.facebook.com/ArrivalsCaveOfficial"
+        ]
+    };
+
+    // Define the Local Business Entity
+    const localStore = {
+        "@type": "ClothingStore",
+        "@id": `${baseUrl}/#local-store`,
+        "name": "Arrivals Cave Store",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "G/D 13 No. Road, Chandgaon Residential Area",
+            "addressLocality": "Chandgaon",
+            "addressRegion": "Chattogram",
+            "postalCode": "4211",
+            "addressCountry": "BD"
+        }
+    };
+
+    const blogPosting = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
-        headline: isEN ? post.title : (post.title_bn || post.title),
-        image: post.featured_image,
-        datePublished: post.published_at,
-        dateModified: post.updated_at,
-        author: { "@type": "Organization", name: "Arrivals Cave" },
-        publisher: {
+        "@id": `${baseUrl}/${locale}/blog/${post.slug}/#article`,
+        "headline": title,
+        "description": isEN ? post.excerpt : (post.excerpt_bn || post.excerpt),
+        "image": post.featured_image,
+        "datePublished": post.published_at,
+        "dateModified": post.updated_at,
+        "author": expertAuthor,
+        "publisher": {
             "@type": "Organization",
-            name: "Arrivals Cave",
-            logo: { "@type": "ImageObject", url: `${baseUrl}/logo.png` },
+            "name": "Arrivals Cave",
+            "logo": { "@type": "ImageObject", "url": `${baseUrl}/logo.png` },
         },
-        inLanguage: locale,
+        "inLanguage": locale,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `${baseUrl}/${locale}/blog/${post.slug}`,
+        },
+        "about": [
+            { "@type": "Thing", "name": "Panjabi (clothing)", "sameAs": "https://www.wikidata.org/wiki/Q3362145" },
+            { "@type": "Thing", "name": "Eid-ul-Fitr", "sameAs": "https://www.wikidata.org/wiki/Q483041" },
+            { "@type": "Thing", "name": "Fashion of Bangladesh", "sameAs": "https://www.wikidata.org/wiki/Q104840845" }
+        ],
+        "copyrightHolder": { "@type": "Organization", "name": "Arrivals Cave" }
+    };
+
+    const graph: any[] = [blogPosting];
+
+    if (faqItems && faqItems.length > 0) {
+        const faqs = generateFAQJsonLd(faqItems);
+        if (faqs) {
+            graph.push(faqs);
+        }
+    }
+
+    return {
+        "@context": "https://schema.org",
+        "@graph": graph
     };
 }
+
+
 
 /**
  * Generate Organization JSON-LD
@@ -109,6 +169,7 @@ export function generateOrganizationJsonLd() {
     return {
         "@context": "https://schema.org",
         "@type": ["Organization", "LocalBusiness", "ClothingStore"],
+        "@id": `${baseUrl}/#organization`,
         name: "Arrivals Cave",
         url: baseUrl,
         logo: `${baseUrl}/logo.png`,
@@ -150,3 +211,4 @@ export function generateBreadcrumbJsonLd(items: { name: string; item: string }[]
         })),
     };
 }
+
