@@ -79,7 +79,11 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
     };
 
     const handleWhatsAppConfirm = () => {
-        const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
+        let phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
+        phone = phone.replace(/[^0-9]/g, '');
+        if (phone.length === 11 && phone.startsWith('01')) {
+            phone = '88' + phone;
+        }
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
         const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
 

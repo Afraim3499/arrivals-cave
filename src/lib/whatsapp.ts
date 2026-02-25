@@ -71,7 +71,12 @@ export function buildWhatsAppMessage(order: WhatsAppOrderData): string {
 export function buildWhatsAppURL(message: string): string {
     const encoded = encodeURIComponent(message);
     // Use process.env but fallback to default if not set
-    const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
+    let number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
+
+    number = number.replace(/[^0-9]/g, '');
+    if (number.length === 11 && number.startsWith('01')) {
+        number = '88' + number;
+    }
 
     // Standardize number formath limit ~4000-8000 chars depending on platform
     // We'll truncate at 4000 to be safe
