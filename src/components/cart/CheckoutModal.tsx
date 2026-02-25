@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/stores/cart-store";
 import { buildWhatsAppMessage, buildWhatsAppURL } from "@/lib/whatsapp";
-import { Product } from "@/lib/products";
+import { Product, getProductPrices } from "@/lib/products";
 import { X, MapPin, Phone, User, Building2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { analytics } from "@/lib/analytics";
@@ -35,7 +35,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
     const isDirect = !!directProduct;
 
     const items = isDirect ? [{ product: directProduct!, size: directSize || "Free Size", quantity: 1 }] : cartItems;
-    const subtotal = isDirect ? Math.round(directProduct!.price * 0.8) : getTotal();
+    const subtotal = isDirect ? directProduct!.price : getTotal();
     const maxCashback = 680;
     const units = Math.floor(subtotal / 3100);
     const potentialCashback = Math.min(units * 170, maxCashback);
@@ -221,22 +221,25 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                     {step === "summary" && (
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                {items.map((item) => (
-                                    <div key={`${item.product.id}-${item.size}`} className="flex gap-4 p-3 rounded-xl border border-border bg-muted/20">
-                                        <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0 border border-border">
-                                            {item.product.images[0] && (
-                                                <Image src={item.product.images[0]} alt={item.product.title} fill className="object-cover" />
-                                            )}
+                                {items.map((item) => {
+                                    const { currentPrice } = getProductPrices(item.product);
+                                    return (
+                                        <div key={`${item.product.id}-${item.size}`} className="flex gap-4 p-3 rounded-xl border border-border bg-muted/20">
+                                            <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0 border border-border">
+                                                {item.product.images[0] && (
+                                                    <Image src={item.product.images[0]} alt={item.product.title} fill className="object-cover" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1 py-1">
+                                                <h4 className="font-medium text-sm line-clamp-1">{item.product.title}</h4>
+                                                <p className="text-xs text-muted-foreground mt-1">Size: {item.size} • Qty: {item.quantity}</p>
+                                            </div>
+                                            <div className="font-medium text-sm py-1">
+                                                ৳{currentPrice * item.quantity}
+                                            </div>
                                         </div>
-                                        <div className="flex-1 py-1">
-                                            <h4 className="font-medium text-sm line-clamp-1">{item.product.title}</h4>
-                                            <p className="text-xs text-muted-foreground mt-1">Size: {item.size} • Qty: {item.quantity}</p>
-                                        </div>
-                                        <div className="font-medium text-sm py-1">
-                                            ৳{Math.round(item.product.price * 0.8) * item.quantity}
-                                        </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
 
                             <div className="p-4 rounded-xl border-2 border-primary/20 bg-primary/5 space-y-2">

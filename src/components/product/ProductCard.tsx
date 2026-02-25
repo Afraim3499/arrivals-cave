@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/lib/products";
+import { Product, getProductPrices } from "@/lib/products";
 import { Link } from "@/i18n/routing";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,8 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
         // Let's make the button navigate to the product page for size selection.
     };
 
-    const discountPercent = 20;
-    const discountedPrice = Math.round(product.price * 0.8);
+    const { isDiscounted, currentPrice, originalPrice, discountPercent } = getProductPrices(product);
 
     return (
         <Link href={`/product/${product.slug}`} className="group block h-full">
@@ -58,9 +57,11 @@ export function ProductCard({ product }: ProductCardProps) {
                                 {t("newArrival")}
                             </Badge>
                         )}
-                        <Badge variant="destructive">
-                            {t("sale", { percent: discountPercent })}
-                        </Badge>
+                        {isDiscounted && (
+                            <Badge variant="destructive">
+                                {t("sale", { percent: discountPercent })}
+                            </Badge>
+                        )}
                     </div>
                 </div>
 
@@ -70,11 +71,13 @@ export function ProductCard({ product }: ProductCardProps) {
                     </h3>
                     <div className="mt-2 flex items-baseline gap-2">
                         <span className="text-lg font-bold text-primary">
-                            ৳{discountedPrice.toLocaleString()}
+                            ৳{currentPrice.toLocaleString()}
                         </span>
-                        <span className="text-sm text-muted-foreground line-through">
-                            ৳{product.price.toLocaleString()}
-                        </span>
+                        {isDiscounted && (
+                            <span className="text-sm text-muted-foreground line-through">
+                                ৳{originalPrice.toLocaleString()}
+                            </span>
+                        )}
                     </div>
                 </CardContent>
                 {/*

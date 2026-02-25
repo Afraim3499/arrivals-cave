@@ -35,7 +35,7 @@ export function MobileStickyBar() {
             <div className="flex items-center justify-around h-16 px-4">
                 {isProductPage ? (
                     <>
-                        <Button variant="ghost" size="sm" onClick={() => router.back()} className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold">
+                        <Button variant="ghost" size="sm" onClick={() => router.back()} className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold px-2">
                             <ArrowLeft className="h-5 w-5" />
                             {t("back")}
                         </Button>
@@ -51,12 +51,12 @@ export function MobileStickyBar() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="border-green-500 text-green-500 hover:bg-green-500/10 flex flex-col gap-1 h-auto px-2"
+                            className="border-green-500 text-green-500 hover:bg-green-500/10 flex flex-col gap-1 h-11 px-2"
                             onClick={() => {
                                 window.dispatchEvent(new CustomEvent("whatsapp-buy-triggered"));
                             }}
                         >
-                            <MessageSquare className="h-5 w-5" />
+                            <MessageSquare className="h-4 w-4" />
                             <span className="text-[10px] uppercase font-bold">{t("whatsappBuy")}</span>
                         </Button>
                     </>
@@ -65,7 +65,7 @@ export function MobileStickyBar() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold"
+                            className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold px-3"
                             onClick={() => window.dispatchEvent(new CustomEvent("open-filters"))}
                         >
                             <Filter className="h-5 w-5" />
@@ -74,7 +74,7 @@ export function MobileStickyBar() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold"
+                            className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold px-3"
                             onClick={() => window.dispatchEvent(new CustomEvent("open-sort"))}
                         >
                             <ListOrdered className="h-5 w-5" />
@@ -83,7 +83,7 @@ export function MobileStickyBar() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold relative"
+                            className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold relative px-3"
                             onClick={openCart}
                         >
                             <ShoppingBag className="h-5 w-5" />
@@ -97,14 +97,14 @@ export function MobileStickyBar() {
                     </>
                 ) : isBlogPage ? (
                     <>
-                        <Button variant="ghost" size="sm" className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold">
+                        <Button variant="ghost" size="sm" className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold px-4">
                             <Share2 className="h-5 w-5" />
                             {t("share")}
                         </Button>
                         <div className="flex-1" />
                         <Button
                             size="lg"
-                            className="bg-whatsapp hover:bg-whatsapp-hover text-white flex-1 font-bold shadow-glow"
+                            className="bg-whatsapp hover:bg-whatsapp-hover text-white flex-1 font-bold shadow-glow h-11"
                             onClick={() => window.open("https://wa.me/8801626748116", "_blank")}
                         >
                             <MessageSquare className="h-5 w-5" />
@@ -117,7 +117,7 @@ export function MobileStickyBar() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold"
+                            className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold px-4"
                             onClick={() => router.push("/")}
                         >
                             <ArrowLeft className="h-5 w-5" />
@@ -126,7 +126,7 @@ export function MobileStickyBar() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="flex flex-col gap-1 h-auto text-[10px] uppercase font-bold relative"
+                            className="flex flex-col gap-1 h-11 text-[10px] uppercase font-bold relative px-4"
                             onClick={openCart}
                         >
                             <ShoppingBag className="h-5 w-5" />

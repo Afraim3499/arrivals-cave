@@ -25,6 +25,7 @@ interface Suggestion {
     url: string;
     image?: string;
     price?: number;
+    compare_at_price?: number | null;
     code?: string;
     category?: string;
 }
@@ -84,8 +85,10 @@ export function SearchModal({ trigger }: { trigger?: React.ReactNode }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                {trigger || (
-                    <button className="flex items-center justify-center h-10 w-10 text-foreground/80 hover:text-primary hover:bg-muted/50 rounded-full transition-colors relative">
+                {trigger ? (
+                    <div suppressHydrationWarning>{trigger}</div>
+                ) : (
+                    <button suppressHydrationWarning className="flex items-center justify-center h-10 w-10 text-foreground/80 hover:text-primary hover:bg-muted/50 rounded-full transition-colors relative">
                         <Search className="h-5 w-5" />
                         <span className="sr-only">Search</span>
                     </button>
@@ -231,11 +234,13 @@ export function SearchModal({ trigger }: { trigger?: React.ReactNode }) {
                                 {item.price && (
                                     <div className="flex flex-col items-end">
                                         <div className="text-lg font-black text-primary">
-                                            ৳{Math.round(item.price * 0.8).toLocaleString()}
-                                        </div>
-                                        <div className="text-[10px] text-muted-foreground line-through">
                                             ৳{item.price.toLocaleString()}
                                         </div>
+                                        {(item.compare_at_price || 0) > item.price && (
+                                            <div className="text-[10px] text-muted-foreground line-through">
+                                                ৳{item.compare_at_price!.toLocaleString()}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </Link>

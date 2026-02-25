@@ -1,6 +1,7 @@
 "use client";
 
 import { useCartStore } from "@/stores/cart-store";
+import { getProductPrices } from "@/lib/products";
 import {
     Sheet,
     SheetContent,
@@ -72,7 +73,7 @@ export function CartDrawer() {
                             <ScrollArea className="h-full pr-4">
                                 <div className="space-y-6">
                                     {items.map((item) => {
-                                        const discountedPrice = Math.round(item.product.price * 0.8);
+                                        const { isDiscounted, currentPrice, originalPrice } = getProductPrices(item.product);
 
                                         return (
                                             <div
@@ -137,8 +138,8 @@ export function CartDrawer() {
 
                                                         <div className="flex items-center gap-4">
                                                             <span className="font-medium text-primary flex flex-col items-end">
-                                                                <span>৳{discountedPrice * item.quantity}</span>
-                                                                <span className="text-[10px] text-muted-foreground line-through">৳{item.product.price * item.quantity}</span>
+                                                                <span>৳{currentPrice * item.quantity}</span>
+                                                                {isDiscounted && <span className="text-[10px] text-muted-foreground line-through">৳{originalPrice * item.quantity}</span>}
                                                             </span>
                                                             <Button
                                                                 variant="ghost"

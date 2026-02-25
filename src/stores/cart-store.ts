@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Product } from "@/lib/products";
+import { Product, getProductPrices } from "@/lib/products";
 
 export interface CartItem {
     product: Product;
@@ -90,7 +90,10 @@ export const useCartStore = create<CartState>()(
             getTotal: () => {
                 const { items } = get();
                 return items.reduce(
-                    (total, item) => total + Math.round(item.product.price * 0.8) * item.quantity,
+                    (total, item) => {
+                        const { currentPrice } = getProductPrices(item.product);
+                        return total + currentPrice * item.quantity;
+                    },
                     0
                 );
             },

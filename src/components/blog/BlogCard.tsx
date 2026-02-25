@@ -27,7 +27,7 @@ export function BlogCard({ post, locale }: BlogCardProps) {
     return (
         <Link href={`/blog/${post.slug}`} className="group block h-full">
             <Card className="h-full border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                <div className="relative aspect-video overflow-hidden bg-muted">
+                <div className="relative aspect-square overflow-hidden bg-muted">
                     {post.featured_image && (
                         <Image
                             src={post.featured_image}

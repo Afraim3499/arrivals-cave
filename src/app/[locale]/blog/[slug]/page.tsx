@@ -9,7 +9,7 @@ import { Metadata } from "next";
 import { generatePageMeta, generateHreflangMetadata } from "@/lib/seo";
 import { generateBlogJsonLd } from "@/lib/schema";
 import { marked } from "marked";
-import { searchProducts } from "@/lib/products";
+import { searchProducts, type Product } from "@/lib/products";
 import { BlogCard } from "@/components/blog/BlogCard";
 
 interface BlogPostPageProps {
@@ -110,7 +110,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     </div>
 
                     {post.featured_image && (
-                        <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden mb-12 bg-muted shadow-2xl ring-1 ring-border/50">
+                        <div className="relative aspect-square w-full rounded-2xl overflow-hidden mb-12 bg-muted shadow-2xl ring-1 ring-border/50">
                             <Image
                                 src={post.featured_image}
                                 alt={title}
@@ -125,7 +125,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         <div className="mb-12 p-8 bg-primary/[0.03] border-l-4 border-primary rounded-r-2xl shadow-sm">
                             <div className="flex items-center gap-2 mb-4 text-primary font-display font-bold uppercase tracking-widest text-xs">
                                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                                Key Takeaways (AEO Optimized)
+                                Key Takeaways
                             </div>
                             <div className="text-lg text-foreground/90 leading-relaxed font-medium italic">
                                 "{aeoSnippet}"
@@ -178,9 +178,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             <p className="text-muted-foreground text-lg">Curated picks based on this article's topical research.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {relatedProducts.map(product => (
+                            {relatedProducts.map((product: Product) => (
                                 <div key={product.id} className="group">
-                                    <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted mb-4 shadow-md group-hover:shadow-xl transition-all duration-500">
+                                    <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted mb-4 shadow-md group-hover:shadow-xl transition-all duration-500">
                                         <Image
                                             src={product.images[0]}
                                             alt={product.title}

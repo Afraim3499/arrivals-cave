@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/lib/products";
+import { Product, getProductPrices } from "@/lib/products";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,8 @@ export function ProductDetails({ product, seoTitle }: ProductDetailsProps) {
     const [quantity, setQuantity] = useState(1);
     const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+
+    const { isDiscounted, currentPrice, originalPrice, discountPercent } = getProductPrices(product);
 
     const stockBySize = (product.stock_by_size as Record<string, number>) || {};
     const sizes = Object.keys(stockBySize).length > 0 ? Object.keys(stockBySize) : ["M", "L", "XL", "XXL"];
@@ -83,13 +85,15 @@ export function ProductDetails({ product, seoTitle }: ProductDetailsProps) {
                             </h1>
 
                             <div className="flex items-center gap-6 mt-6">
-                                <span className="text-3xl font-bold text-primary">৳{Math.round(product.price * 0.8).toLocaleString()}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xl text-muted-foreground line-through opacity-60">৳{product.price.toLocaleString()}</span>
-                                    <Badge variant="destructive" className="ml-2">
-                                        20% OFF
-                                    </Badge>
-                                </div>
+                                <span className="text-3xl font-bold text-primary">৳{currentPrice.toLocaleString()}</span>
+                                {isDiscounted && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xl text-muted-foreground line-through opacity-60">৳{originalPrice.toLocaleString()}</span>
+                                        <Badge variant="destructive" className="ml-2">
+                                            {discountPercent}% OFF
+                                        </Badge>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -204,8 +208,10 @@ export function ProductDetails({ product, seoTitle }: ProductDetailsProps) {
                 <div className="flex-shrink-0 flex flex-col justify-center">
                     <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">{product.title}</p>
                     <div className="flex items-center gap-2">
-                        <p className="font-bold text-lg text-primary">৳{Math.round(product.price * 0.8).toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground line-through">৳{product.price}</p>
+                        <p className="font-bold text-lg text-primary">৳{currentPrice.toLocaleString()}</p>
+                        {isDiscounted && (
+                            <p className="text-xs text-muted-foreground line-through">৳{originalPrice.toLocaleString()}</p>
+                        )}
                     </div>
                 </div>
                 <Button
@@ -225,7 +231,7 @@ export function ProductDetails({ product, seoTitle }: ProductDetailsProps) {
                 directProduct={selectedSize ? {
                     id: product.id,
                     title: product.title,
-                    price: product.price,
+                    price: currentPrice,
                     images: product.images,
                     productCode: product.code
                 } : undefined}

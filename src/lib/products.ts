@@ -19,6 +19,15 @@ export interface ProductFilter {
     offset?: number;
 }
 
+export function getProductPrices(product: { price: number; compare_at_price?: number | null }) {
+    const discountPercent = 20;
+    const isDiscounted = true;
+    const originalPrice = product.price;
+    const currentPrice = Math.round(product.price * 0.8);
+
+    return { isDiscounted, currentPrice, originalPrice, discountPercent };
+}
+
 // --- Server-side Queries (Public) ---
 
 export async function searchProducts(filter: ProductFilter = {}) {

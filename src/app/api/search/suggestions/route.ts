@@ -65,7 +65,7 @@ export async function GET(request: Request) {
     // 3. Search Products
     const { data: products } = await supabase
         .from("products")
-        .select("id, title, slug, images, price, code")
+        .select("id, title, slug, images, price, compare_at_price, code")
         .or(`title.ilike.%${q}%,code.ilike.%${q}%,seo_meta.ilike.%${q}%,color_label.ilike.%${q}%,fabric.ilike.%${q}%`)
         .eq("is_active", true)
         .limit(10);
@@ -78,6 +78,7 @@ export async function GET(request: Request) {
                 url: `/product/${product.slug}`,
                 image: product.images[0],
                 price: product.price,
+                compare_at_price: product.compare_at_price,
                 code: product.code
             });
         });

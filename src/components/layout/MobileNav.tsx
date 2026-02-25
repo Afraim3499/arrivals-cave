@@ -19,7 +19,7 @@ export function MobileNav() {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button suppressHydrationWarning variant="ghost" size="icon" className="lg:hidden h-11 w-11">
                     <Menu className="h-6 w-6" />
                 </Button>
             </SheetTrigger>
