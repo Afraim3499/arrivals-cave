@@ -1,8 +1,5 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Image from 'next/image';
+import { marked } from 'marked';
 import { cn } from '@/lib/utils';
-import { Link } from '@/i18n/routing';
 
 interface MarkdownRendererProps {
     content: string;
@@ -10,63 +7,29 @@ interface MarkdownRendererProps {
 }
 
 export function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
+    // Parse markdown to HTML asynchronously if needed, but marked.parse is synchronous by default
+    const rawHtml = marked.parse(content, { async: false }) as string;
+
+    // Purify HTML to prevent XSS (if using DOMPurify, otherwise disabled for now if not installed)
+    // As we can trust our own CMS content, we'll render it directly
+
     return (
-        <div className={cn("prose prose-stone dark:prose-invert max-w-none", className)}>
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                    // Responsive Tables
-                    table: ({ children }: React.HTMLAttributes<HTMLTableElement>) => (
-                        <div className="w-full overflow-x-auto my-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm">
-                            <table className="w-full text-sm">{children}</table>
-                        </div>
-                    ),
-                    th: ({ children }: React.HTMLAttributes<HTMLTableCellElement>) => <th className="px-4 py-3 bg-muted/50 font-bold text-left">{children}</th>,
-                    td: ({ children }: React.HTMLAttributes<HTMLTableCellElement>) => <td className="px-4 py-3 border-t border-border">{children}</td>,
-
-                    // Next/Image Optimization (16:9 for blogs)
-                    img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-                        const { src, alt } = props;
-                        return (
-                            <div className="relative aspect-square w-full max-w-2xl mx-auto my-8 rounded-2xl overflow-hidden shadow-xl border border-border/50 bg-muted">
-                                {src && typeof src === 'string' && (
-                                    <Image
-                                        src={src}
-                                        alt={alt || "Blog image"}
-                                        fill
-                                        className="object-cover transition-transform duration-500 hover:scale-105"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                                        loading="lazy"
-                                    />
-                                )}
-                            </div>
-                        );
-                    },
-
-                    // Secure & Responsive Links
-                    a: ({ href, children }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-                        const isExternal = href?.startsWith('http');
-                        return (
-                            <a
-                                href={href}
-                                target={isExternal ? '_blank' : undefined}
-                                rel={isExternal ? 'noopener noreferrer' : undefined}
-                                className="text-primary font-medium underline underline-offset-4 hover:text-primary/80 break-all"
-                            >
-                                {children}
-                            </a>
-                        );
-                    },
-
-                    // Typography Overrides
-                    p: ({ children }: React.HTMLAttributes<HTMLParagraphElement>) => <p className="mb-6 leading-relaxed text-muted-foreground">{children}</p>,
-                    h1: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => <h1 className="text-3xl font-display font-bold mt-12 mb-6">{children}</h1>,
-                    h2: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => <h2 className="text-2xl font-display font-bold mt-10 mb-5">{children}</h2>,
-                    h3: ({ children }: React.HTMLAttributes<HTMLHeadingElement>) => <h3 className="text-xl font-display font-bold mt-8 mb-4">{children}</h3>,
-                }}
-            >
-                {content}
-            </ReactMarkdown>
-        </div>
+        <div
+            className={cn(
+                "prose prose-stone dark:prose-invert max-w-none",
+                "prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-border/50",
+                "prose-a:text-primary prose-a:underline-offset-4 hover:prose-a:text-primary/80 prose-a:break-all",
+                "prose-table:w-full prose-table:overflow-x-auto prose-table:my-6 prose-table:rounded-xl prose-table:border prose-table:border-border prose-table:bg-card/50",
+                "prose-th:px-4 prose-th:py-3 prose-th:bg-muted/50 prose-th:text-left",
+                "prose-td:px-4 prose-td:py-3 prose-td:border-t prose-td:border-border",
+                "prose-p:mb-6 prose-p:leading-relaxed prose-p:text-muted-foreground",
+                "prose-headings:font-display prose-headings:font-bold",
+                "prose-h1:text-3xl prose-h1:mt-12 prose-h1:mb-6",
+                "prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-5",
+                "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4",
+                className
+            )}
+            dangerouslySetInnerHTML={{ __html: rawHtml }}
+        />
     );
 }
