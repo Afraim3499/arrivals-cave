@@ -73,32 +73,9 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         } else {
             console.error("Order Failed: ", response.error);
             alert("Something went wrong saving the order. Please try again.");
+            setStep("success"); // Still let them fallback to WhatsApp if DB fails
         }
-        // Fallback WhatsApp message logic if backend saving fails but we still want to let them order
-        const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8801626748116";
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
-        const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
-
-        let message = `*New Order Confirmed (#${orderId})*\n\n`;
-        message += `*Customer Details*\nName: ${formData.name}\nPhone: ${formData.phone}\nCity: ${formData.city}\nAddress: ${formData.address}\n`;
-        if (formData.notes) message += `Notes: ${formData.notes}\n`;
-
-        message += `\n*Order Items*\n`;
-        items.forEach((item) => {
-            message += `• ${item.product.title} (Size: ${item.size}) x ${item.quantity}\n`;
-        });
-        message += `\n*Subtotal:* ৳${subtotal.toLocaleString()}\n`;
-        message += `*Cashback Earned:* ৳${potentialCashback.toLocaleString()}\n`;
-        message += `\n*Track Order:* ${trackingLink}\n`;
-        message += `\nPlease confirm my delivery!`;
-
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
-        // Open WhatsApp
-        window.open(url, "_blank");
-
-        // Auto Redirect User to tracking page
-        window.location.href = `/track-order?id=${orderId}&phone=${formData.phone}`;
+        setIsSubmitting(false);
     };
 
     const handleWhatsAppConfirm = () => {
@@ -121,11 +98,13 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
 
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-        // Open WhatsApp
+        // Open WhatsApp (works reliably here because it's a direct, synchronous UI click event)
         window.open(url, "_blank");
 
-        // Auto Redirect User to tracking page
-        window.location.href = `/track-order?id=${orderId}&phone=${formData.phone}`;
+        // Auto Redirect User to tracking page after a tiny delay so mobile browsers don't kill the popup
+        setTimeout(() => {
+            window.location.href = `/track-order?id=${orderId}&phone=${formData.phone}`;
+        }, 500);
     };
 
     return (
