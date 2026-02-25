@@ -146,6 +146,8 @@ export function Footer() {
                         <h3 className="font-semibold text-foreground mb-4">{t("quickLinks")}</h3>
                         <ul className="space-y-2 text-sm">
                             <li><Link href="/" className="hover:text-foreground transition-colors">Home</Link></li>
+                            <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
+                            <li><Link href="/manifesto" className="hover:text-foreground transition-colors">Brand Manifesto</Link></li>
                             <li><Link href="/shop/all" className="hover:text-foreground transition-colors">Shop All</Link></li>
                             <li><Link href="/eid-panjabi-collection" className="hover:text-foreground transition-colors text-primary font-bold">Eid Collection</Link></li>
                             <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
