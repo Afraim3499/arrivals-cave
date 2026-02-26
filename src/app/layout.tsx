@@ -26,10 +26,13 @@ export const metadata: Metadata = {
   ),
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "https://arrivalscavebd.com/favicon.ico", sizes: "any" },
+      { url: "https://arrivalscavebd.com/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "https://arrivalscavebd.com/apple-icon.png", type: "image/png", sizes: "180x180" },
     ],
-    apple: "/apple-icon.png",
+    apple: [
+      { url: "https://arrivalscavebd.com/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   manifest: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com"}/manifest.webmanifest`,
   openGraph: {
