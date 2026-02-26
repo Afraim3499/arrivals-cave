@@ -59,7 +59,8 @@ export function buildWhatsAppMessage(order: WhatsAppOrderData): string {
 
     lines.push("─────────────────");
     lines.push(`*Subtotal:* ৳${order.subtotal.toLocaleString()}`);
-    lines.push("*Delivery:* To be confirmed on WhatsApp");
+    const deliveryRate = order.customer.city === "Chattogram" ? "৳70" : "৳130–৳150";
+    lines.push(`*Delivery:* ${deliveryRate}`);
     lines.push("");
     lines.push("Thank you! 🙏");
     lines.push("");

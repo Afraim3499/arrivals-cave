@@ -10,12 +10,12 @@ interface FAQItem {
 
 const DEFAULT_FAQ_ITEMS: FAQItem[] = [
     {
-        question: "Delivery time in Dhaka?",
-        answer: "We deliver within Dhaka in 1-2 business days. All Dhaka orders are dispatched same-day if placed before 2PM."
+        question: "Delivery time in Chattogram?",
+        answer: "We deliver within Chattogram city in 24–48 hours for ৳70. Orders are typically dispatched same-day or next-day."
     },
     {
-        question: "Delivery in Chattogram?",
-        answer: "Chattogram deliveries take 2-3 business days via our trusted courier partner. You'll receive tracking updates via SMS."
+        question: "Delivery outside Chattogram?",
+        answer: "For Dhaka and other districts, we deliver within 2–3 days for ৳130–৳150 via our trusted courier partners."
     },
     {
         question: "Cox's Bazar delivery available?",

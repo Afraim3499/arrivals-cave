@@ -47,7 +47,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         name: "",
         phone: "",
         address: "",
-        city: "Dhaka",
+        city: "Chattogram",
         notes: ""
     });
 
@@ -87,8 +87,12 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://arrivalscavebd.com";
         const trackingLink = `${siteUrl}/track-order?id=${orderId}&phone=${formData.phone}`;
 
+        const deliveryCharge = formData.city === "Chattogram" ? "৳70" : "৳130–৳150";
+        const totalWithDelivery = `৳${subtotal.toLocaleString()} + ${deliveryCharge} (delivery)`;
+
         let message = `*New Order Confirmed (#${orderId})*\n\n`;
         message += `*Customer Details*\nName: ${formData.name}\nPhone: ${formData.phone}\nCity: ${formData.city}\nAddress: ${formData.address}\n`;
+        message += `*Delivery Charge:* ${deliveryCharge}\n`;
         if (formData.notes) message += `Notes: ${formData.notes}\n`;
 
         message += `\n*Order Items*\n`;
@@ -96,6 +100,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
             message += `• ${item.product.title} (Size: ${item.size}) x ${item.quantity}\n`;
         });
         message += `\n*Subtotal:* ৳${subtotal.toLocaleString()}\n`;
+        message += `*Total Amount:* ${totalWithDelivery}\n`;
         message += `*Cashback Earned:* ৳${potentialCashback.toLocaleString()}\n`;
         message += `\n*Track Order:* ${trackingLink}\n`;
         message += `\nPlease confirm my delivery!`;
@@ -166,8 +171,8 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                                         className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm appearance-none"
                                     >
-                                        <option value="Dhaka">Inside Dhaka (৳80)</option>
-                                        <option value="Outside Dhaka">Outside Dhaka (৳150)</option>
+                                        <option value="Chattogram">Inside Chattogram (৳70)</option>
+                                        <option value="Outside Chattogram">Outside Chattogram (৳130–৳150)</option>
                                     </select>
                                 </div>
 

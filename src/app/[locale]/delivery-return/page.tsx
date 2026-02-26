@@ -34,11 +34,11 @@ export default async function DeliveryReturnPage({ params }: { params: Promise<{
                             <ul className="space-y-6 text-muted-foreground flex-1">
                                 <li className="flex gap-4">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                    <p><span className="font-bold text-foreground">{isBN ? "ঢাকা শহর:" : "Inside Dhaka:"}</span> {isBN ? "৮০ টাকা (২-৩ কার্যদিবস)" : "80 BDT (2-3 working days)"}</p>
+                                    <p><span className="font-bold text-foreground">{isBN ? "চট্টগ্রাম শহর:" : "Inside Chattogram:"}</span> {isBN ? "৭০ টাকা (২৪–৪৮ ঘণ্টা)" : "70 BDT (24–48 hours)"}</p>
                                 </li>
                                 <li className="flex gap-4">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                    <p><span className="font-bold text-foreground">{isBN ? "ঢাকার বাইরে:" : "Outside Dhaka:"}</span> {isBN ? "১৫০ টাকা (৩-৫ কার্যদিবস)" : "150 BDT (3-5 working days)"}</p>
+                                    <p><span className="font-bold text-foreground">{isBN ? "চট্টগ্রামের বাইরে:" : "Outside Chattogram:"}</span> {isBN ? "১৩০–১৫০ টাকা (২-৩ দিন)" : "130–150 BDT (2-3 days)"}</p>
                                 </li>
                                 <li className="flex gap-4">
                                     <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
