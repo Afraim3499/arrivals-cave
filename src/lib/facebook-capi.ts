@@ -144,8 +144,7 @@ export async function sendFacebookEvent(payload: FBEventPayload): Promise<{ succ
         },
     };
 
-    // Action source metadata (messaging_channel at event level is correct)
-    event.messaging_channel = "whatsapp";
+    // action_source: "website" — messaging_channel only valid for "business_messaging"
 
     if (payload.sourceUrl) {
         event.event_source_url = payload.sourceUrl;
