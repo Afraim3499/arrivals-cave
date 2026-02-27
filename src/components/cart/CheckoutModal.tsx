@@ -70,6 +70,21 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         if (response.success && response.friendlyId) {
             setOrderId(response.friendlyId);
             setStep("success");
+
+            // Fire client-side Facebook Pixel Purchase event for deduplication with CAPI
+            if (typeof window !== "undefined" && (window as any).fbq) {
+                (window as any).fbq("track", "Purchase", {
+                    currency: "BDT",
+                    value: subtotal,
+                    content_type: "product",
+                    content_ids: items.map((item) => item.product.id),
+                    contents: items.map((item) => ({
+                        id: item.product.id,
+                        quantity: item.quantity,
+                    })),
+                    order_id: response.friendlyId,
+                });
+            }
         } else {
             console.error("Order Failed: ", response.error);
             alert("Something went wrong saving the order. Please try again.");

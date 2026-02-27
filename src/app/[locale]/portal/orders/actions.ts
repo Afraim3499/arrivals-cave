@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { sendOrderEvents } from "@/lib/facebook-capi";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 // We use the service role key to bypass RLS for inserting admin-level data if needed,
@@ -55,6 +56,21 @@ export async function createOrder(orderData: any, items: any[]) {
             .insert(orderItemsData);
 
         if (itemsError) throw new Error(itemsError.message);
+
+        // Fire Facebook CAPI events (non-blocking — errors are logged, never break orders)
+        sendOrderEvents({
+            name: orderData.name,
+            phone: orderData.phone,
+            email: orderData.email || null,
+            city: orderData.city,
+            subtotal: orderData.subtotal,
+            friendlyId: friendlyId,
+            items: items.map((item: any) => ({
+                productId: item.product.id,
+                productName: item.product.title,
+                quantity: item.quantity,
+            })),
+        }).catch((err) => console.error("[FB CAPI] Order events failed:", err));
 
         return { success: true, friendlyId: friendlyId, orderId: order.id };
     } catch (error: any) {
