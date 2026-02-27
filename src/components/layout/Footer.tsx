@@ -151,6 +151,7 @@ export function Footer() {
                             <li><Link href="/shop/all" className="hover:text-foreground transition-colors">Shop All</Link></li>
                             <li><Link href="/eid-panjabi-collection" className="hover:text-foreground transition-colors text-primary font-bold">Eid Collection</Link></li>
                             <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
+                            <li><Link href="/track-order" className="hover:text-foreground transition-colors">Track Order</Link></li>
                         </ul>
                     </div>
 
