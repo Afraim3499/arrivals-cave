@@ -122,7 +122,8 @@ export async function sendFacebookEvent(payload: FBEventPayload): Promise<{ succ
     if (ge) userData.ge = ge;
     const db = hashIfPresent(payload.customerData.dateOfBirth);
     if (db) userData.db = db;
-    // Non-hashed identifiers
+    // Non-hashed identifiers inside user_data
+    userData.page_id = FB_PAGE_ID; // required inside user_data per Meta spec
     if (payload.customerData.pageId) {
         userData.page_id = payload.customerData.pageId;
     }
@@ -143,9 +144,8 @@ export async function sendFacebookEvent(payload: FBEventPayload): Promise<{ succ
         },
     };
 
-    // Action source metadata
+    // Action source metadata (messaging_channel at event level is correct)
     event.messaging_channel = "whatsapp";
-    event.page_id = FB_PAGE_ID;
 
     if (payload.sourceUrl) {
         event.event_source_url = payload.sourceUrl;
