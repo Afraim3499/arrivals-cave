@@ -127,7 +127,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
 
         // Auto Redirect User to tracking page after a tiny delay so mobile browsers don't kill the popup
         setTimeout(() => {
-            window.location.href = `/track-order?id=${orderId}&phone=${formData.phone}`;
+            window.location.href = `/order-confirmed?id=${orderId}&phone=${formData.phone}`;
         }, 500);
     };
 
