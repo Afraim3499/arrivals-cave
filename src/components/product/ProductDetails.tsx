@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingBag, MessageSquare, ShieldCheck, Truck, RefreshCcw, CreditCard } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCartStore } from "@/stores/cart-store";
 import { useTranslations } from "next-intl";
 import { ProductGallery } from "./ProductGallery";
@@ -14,7 +14,6 @@ import { SizeChips } from "./SizeChips";
 import { QuantitySelector } from "./QuantitySelector";
 import { CheckoutModal } from "@/components/cart/CheckoutModal";
 import { analytics } from "@/lib/analytics";
-import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface ProductDetailsProps {
@@ -37,8 +36,13 @@ export function ProductDetails({ product, seoTitle }: ProductDetailsProps) {
     const sizes = Object.keys(stockBySize).length > 0 ? Object.keys(stockBySize) : ["M", "L", "XL", "XXL"];
     const maxStock = selectedSize ? stockBySize[selectedSize] || 0 : 0;
 
+    const hasTrackedView = useRef<string | null>(null);
+
     useEffect(() => {
-        analytics.viewItem(product);
+        if (hasTrackedView.current !== product.id) {
+            analytics.viewItem(product);
+            hasTrackedView.current = product.id;
+        }
 
         const handleScroll = () => {
             // Show sticky bar after scrolling past the main add to cart area (approx 600px)
