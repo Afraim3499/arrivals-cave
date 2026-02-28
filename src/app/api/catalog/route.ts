@@ -30,8 +30,20 @@ export async function GET() {
     products?.forEach((product) => {
         const { currentPrice, originalPrice } = getProductPrices(product);
         const isEid = product.is_eid_pick || product.tags?.includes("eid");
-        const title = product.title;
-        const description = product.description;
+
+        // Better Title Fallback
+        const title = product.seo_title || product.title;
+
+        // Better Description Fallback
+        let description = product.seo_meta || product.description;
+        if (!description && product.story_markdown) {
+            // Strip markdown for the feed description
+            description = product.story_markdown.replace(/[#*`_]/g, "").slice(0, 160);
+        }
+        if (!description) {
+            description = `${title} - Premium Panjabi for Men. Handcrafted with ${product.fabric || "Premium Fabric"} in ${product.color_label || "Classic Colors"}. Perfect for Eid 2026.`;
+        }
+
         const mainImage = product.images[0]?.startsWith("http")
             ? product.images[0]
             : `${baseUrl}${product.images[0]}`;
