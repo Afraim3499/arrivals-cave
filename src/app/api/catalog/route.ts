@@ -48,6 +48,14 @@ export async function GET() {
             ? product.images[0]
             : `${baseUrl}${product.images[0]}`;
 
+        // Secondary images
+        const additionalImages = product.images.slice(1).map((img: string) =>
+            img.startsWith("http") ? img : `${baseUrl}${img}`
+        );
+
+        // Available sizes
+        const sizes = Object.keys(product.stock_by_size as Record<string, any>).join(", ");
+
         xml += `
         <item>
             <g:id>${product.slug}</g:id>
@@ -55,11 +63,15 @@ export async function GET() {
             <g:description><![CDATA[${description}]]></g:description>
             <g:link>${baseUrl}/en/product/${product.slug}</g:link>
             <g:image_link>${mainImage}</g:image_link>
+            ${additionalImages.map((img: string) => `<g:additional_image_link>${img}</g:additional_image_link>`).join("\n            ")}
             <g:condition>new</g:condition>
             <g:availability>in_stock</g:availability>
             <g:price>${originalPrice}.00 BDT</g:price>
             <g:sale_price>${currentPrice}.00 BDT</g:sale_price>
             <g:brand>Arrivals Cave</g:brand>
+            <g:gender>male</g:gender>
+            <g:age_group>adult</g:age_group>
+            <g:size>${sizes}</g:size>
             <g:google_product_category>166</g:google_product_category>
             <g:product_type><![CDATA[Clothing > Panjabi]]></g:product_type>
             ${isEid ? `<g:custom_label_0>Eid</g:custom_label_0>` : ""}
