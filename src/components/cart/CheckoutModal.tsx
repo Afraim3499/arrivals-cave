@@ -51,6 +51,23 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         notes: ""
     });
 
+    useEffect(() => {
+        if (isOpen) {
+            analytics.beginCheckout(
+                items.map((item) => {
+                    const { currentPrice } = getProductPrices(item.product as any);
+                    return {
+                        code: (item.product as any).code || item.product.id,
+                        title: item.product.title,
+                        price: currentPrice,
+                        quantity: item.quantity,
+                    };
+                }),
+                subtotal
+            );
+        }
+    }, [isOpen, items, subtotal]);
+
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
