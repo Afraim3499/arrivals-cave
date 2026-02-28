@@ -21,7 +21,7 @@ export function generateProductJsonLd(product: Product, locale: string = "en") {
         name,
         image: product.images,
         description,
-        sku: product.code,
+        sku: product.slug,
         brand: { "@type": "Brand", name: "Arrivals Cave" },
         material: isEN ? product.fabric : (product.fabric_bn || product.fabric),
         color: isEN ? product.color_label : (product.color_label_bn || product.color_label),

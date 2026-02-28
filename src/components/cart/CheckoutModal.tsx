@@ -58,6 +58,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                     const { currentPrice } = getProductPrices(item.product as any);
                     return {
                         code: (item.product as any).code || item.product.id,
+                        slug: (item.product as any).slug || (item.product as any).code,
                         title: item.product.title,
                         price: currentPrice,
                         quantity: item.quantity,
@@ -94,9 +95,9 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                     currency: "BDT",
                     value: subtotal,
                     content_type: "product",
-                    content_ids: items.map((item) => item.product.id),
+                    content_ids: items.map((item) => (item.product as any).slug || item.product.id),
                     contents: items.map((item) => ({
-                        id: item.product.id,
+                        id: (item.product as any).slug || item.product.id,
                         quantity: item.quantity,
                     })),
                     order_id: response.friendlyId,

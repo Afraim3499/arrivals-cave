@@ -12,7 +12,7 @@ export function trackPixelEvent(name: string, params?: Record<string, unknown>) 
 
 // Analytics standard events wrapper
 export const analytics = {
-    viewItem: (product: { price: number; code: string; title: string; cluster?: string }) => {
+    viewItem: (product: { price: number; code: string; slug: string; title: string; cluster?: string }) => {
         // GA4
         trackEvent("view_item", {
             currency: "BDT",
@@ -30,11 +30,11 @@ export const analytics = {
             value: product.price,
             content_name: product.title,
             content_category: product.cluster || "unassigned",
-            content_ids: [product.code],
+            content_ids: [product.slug],
             content_type: "product"
         });
     },
-    addToCart: (product: { price: number; code: string; title: string }, size: string) => {
+    addToCart: (product: { price: number; code: string; slug: string; title: string }, size: string) => {
         // GA4
         trackEvent("add_to_cart", {
             currency: "BDT",
@@ -51,11 +51,11 @@ export const analytics = {
             currency: "BDT",
             value: product.price,
             content_name: product.title,
-            content_ids: [product.code],
+            content_ids: [product.slug],
             content_type: "product"
         });
     },
-    beginCheckout: (cartItems: Array<{ code: string; title: string; price: number; quantity: number }>, total: number) => {
+    beginCheckout: (cartItems: Array<{ code: string; slug: string; title: string; price: number; quantity: number }>, total: number) => {
         // GA4
         trackEvent("begin_checkout", {
             currency: "BDT",
@@ -71,7 +71,7 @@ export const analytics = {
         trackPixelEvent("InitiateCheckout", {
             currency: "BDT",
             value: total,
-            content_ids: cartItems.map(item => item.code),
+            content_ids: cartItems.map(item => item.slug),
             content_type: "product",
             num_items: cartItems.length
         });
