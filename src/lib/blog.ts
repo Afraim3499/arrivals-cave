@@ -1,39 +1,54 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Database } from "@/lib/types/database";
 
 export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 export type SeoPage = Database["public"]["Tables"]["seo_landing_pages"]["Row"];
 
-export const getRecentPosts = async (limit = 3) => {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .eq("is_published", true)
-        .order("published_at", { ascending: false })
-        .limit(limit);
+const _getRecentPostsCached = unstable_cache(
+    async (limit: number) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("blog_posts")
+            .select("*")
+            .eq("is_published", true)
+            .order("published_at", { ascending: false })
+            .limit(limit);
 
-    if (error) return [];
-    return data as BlogPost[];
-};
+        if (error) return [];
+        return data as BlogPost[];
+    },
+    ["recent-posts"],
+    { revalidate: 3600 }
+);
 
-export const getPostBySlug = async (slug: string) => {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .eq("slug", slug)
-        .eq("is_published", true)
-        .single();
+export const getRecentPosts = cache((limit = 3) => _getRecentPostsCached(limit));
 
-    if (error) return null;
-    return data as BlogPost;
-};
+const _getPostBySlugCached = unstable_cache(
+    async (slug: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("blog_posts")
+            .select("*")
+            .eq("slug", slug)
+            .eq("is_published", true)
+            .single();
+
+        if (error) return null;
+        return data as BlogPost;
+    },
+    ["post-by-slug"],
+    { revalidate: 86400 }
+);
+
+export const getPostBySlug = cache((slug: string) => _getPostBySlugCached(slug));
 
 export const getPostsByCluster = async (
     cluster: "eid" | "price-city" | "style" | "sizing" | "general"
 ) => {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data, error } = await supabase
         .from("blog_posts")
         .select("*")
@@ -46,7 +61,7 @@ export const getPostsByCluster = async (
 };
 
 export const getSeoLandingPage = async (slug: string) => {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data, error } = await supabase
         .from("seo_landing_pages")
         .select("*")

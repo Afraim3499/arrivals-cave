@@ -18,6 +18,16 @@ interface BlogPostPageProps {
 
 export const revalidate = 86400; // 24 hours
 
+export async function generateStaticParams() {
+    const { routing } = await import("@/i18n/routing");
+    const { createPublicSupabaseClient } = await import("@/lib/supabase/public-server");
+    const supabase = createPublicSupabaseClient();
+    const { data } = await supabase.from("blog_posts").select("slug").eq("is_published", true);
+    return routing.locales.flatMap((locale) =>
+        (data ?? []).map((p) => ({ locale, slug: p.slug }))
+    );
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
     const { locale, slug } = await params;
     const post = await getPostBySlug(slug);

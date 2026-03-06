@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
 import { Database } from "@/lib/types/database";
 
@@ -121,20 +123,26 @@ export async function getProducts(limit = 10) {
     return searchProducts({ limit });
 }
 
-export async function getCollections() {
-    const supabase = createPublicSupabaseClient();
-    const { data, error } = await supabase
-        .from("collections")
-        .select("*")
-        .eq("is_active", true)
-        .order("title");
+const _getCollectionsCached = unstable_cache(
+    async () => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("collections")
+            .select("*")
+            .eq("is_active", true)
+            .order("title");
 
-    if (error) {
-        console.error("Error fetching collections:", error);
-        return [];
-    }
-    return data as Collection[];
-}
+        if (error) {
+            console.error("Error fetching collections:", error);
+            return [];
+        }
+        return data as Collection[];
+    },
+    ["collections"],
+    { revalidate: 3600 }
+);
+
+export const getCollections = cache(() => _getCollectionsCached());
 
 export const getNewArrivals = async (limit = 4) => {
     return searchProducts({ limit, sort: 'newest' });
@@ -153,29 +161,41 @@ export const getEidPicks = async (limit = 4) => {
     return data as Product[];
 };
 
-export const getProductBySlug = async (slug: string) => {
-    const supabase = createPublicSupabaseClient();
-    const { data, error } = await supabase
-        .from("products")
-        .select("*, collection:collections(*)")
-        .eq("slug", slug)
-        .single();
+const _getProductBySlugCached = unstable_cache(
+    async (slug: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("products")
+            .select("*, collection:collections(*)")
+            .eq("slug", slug)
+            .single();
 
-    if (error) return null;
-    return data as Product;
-};
+        if (error) return null;
+        return data as Product;
+    },
+    ["product-by-slug"],
+    { revalidate: 1800 }
+);
 
-export const getCollectionBySlug = async (slug: string) => {
-    const supabase = createPublicSupabaseClient();
-    const { data, error } = await supabase
-        .from("collections")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+export const getProductBySlug = cache((slug: string) => _getProductBySlugCached(slug));
 
-    if (error) return null;
-    return data as Collection;
-};
+const _getCollectionBySlugCached = unstable_cache(
+    async (slug: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("collections")
+            .select("*")
+            .eq("slug", slug)
+            .single();
+
+        if (error) return null;
+        return data as Collection;
+    },
+    ["collection-by-slug"],
+    { revalidate: 3600 }
+);
+
+export const getCollectionBySlug = cache((slug: string) => _getCollectionBySlugCached(slug));
 
 export const getSEOLandingPage = async (slug: string) => {
     const supabase = createPublicSupabaseClient();
