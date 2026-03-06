@@ -197,17 +197,23 @@ const _getCollectionBySlugCached = unstable_cache(
 
 export const getCollectionBySlug = cache((slug: string) => _getCollectionBySlugCached(slug));
 
-export const getSEOLandingPage = async (slug: string) => {
-    const supabase = createPublicSupabaseClient();
-    const { data, error } = await supabase
-        .from("seo_landing_pages")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+const _getSEOLandingPageCached = unstable_cache(
+    async (slug: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("seo_landing_pages")
+            .select("*")
+            .eq("slug", slug)
+            .single();
 
-    if (error) return null;
-    return data as Database["public"]["Tables"]["seo_landing_pages"]["Row"];
-};
+        if (error) return null;
+        return data as Database["public"]["Tables"]["seo_landing_pages"]["Row"];
+    },
+    ["seo-landing-page"],
+    { revalidate: 86400 }
+);
+
+export const getSEOLandingPage = cache((slug: string) => _getSEOLandingPageCached(slug));
 
 export const getProductsByCollection = async (collectionId: string, options: Partial<ProductFilter> = {}) => {
     return searchProducts({ ...options, collectionId });
@@ -289,3 +295,57 @@ const _getProductsByCollectionDefaultCached = unstable_cache(
 export const getProductsByCollectionDefault = cache(
     (collectionId: string) => _getProductsByCollectionDefaultCached(collectionId)
 );
+
+/**
+ * Cached default listing: products by tag, newest first, no collection join.
+ * Used by tag-based SEO pages (black-panjabi, eid-collection, etc.) when no filters are active.
+ */
+const _getProductsByTagDefaultCached = unstable_cache(
+    async (tag: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .contains("tags", [tag])
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching tag products (default):", error);
+            return [];
+        }
+        return data as Product[];
+    },
+    ["tag-products-default"],
+    { revalidate: 3600 }
+);
+
+export const getProductsByTagDefault = cache(
+    (tag: string) => _getProductsByTagDefaultCached(tag)
+);
+
+/**
+ * Cached default listing: new arrival products, newest first, no collection join.
+ * Used by /new-arrivals when no filters are active.
+ */
+const _getNewArrivalsDefaultCached = unstable_cache(
+    async () => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .eq("is_new_arrival", true)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching new arrivals (default):", error);
+            return [];
+        }
+        return data as Product[];
+    },
+    ["new-arrivals-default"],
+    { revalidate: 3600 }
+);
+
+export const getNewArrivalsDefault = cache(() => _getNewArrivalsDefaultCached());

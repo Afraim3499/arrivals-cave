@@ -1,4 +1,4 @@
-import { getProductsByTag, getSEOLandingPage } from "@/lib/products";
+import { getProductsByTag, getProductsByTagDefault, isDefaultFilter, getSEOLandingPage } from "@/lib/products";
 import { TagCategoryPage } from "@/components/product/TagCategoryPage";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         title: isEN ? "Black Panjabi Collection - Arrivals Cave" : "কালো পাঞ্জাবি কালেকশন - অ্যারাইভালস কেভ",
         description: isEN
             ? "Exploe our classic black Panjabi collection. Timeless elegance, premium comfort, and sophisticated designs in various fabrics."
-            : "আমাদের ক্লাসিক কালো পাঞ্জাবি কালেকশন দেখুন। কালজয়ী আভিজাত্য, প্রিমিয়াম কমফোর্ট এবং সলিড কালার ডিজাইন।",
+            : "আমাদের ক্লাসিক কালো পাঞ্জাবি কালেকশন দেখুন। কালজয়ী আভিজাত্য, প্রিমিয়াম কমফোর্ট এবং সলিড কালার ডিজাইন।",
         path: `/${PAGE_CONFIG.slug}`,
         locale,
     });
@@ -40,14 +40,17 @@ export default async function Page({ params, searchParams }: PageProps) {
     const sParams = await searchParams;
     setRequestLocale(locale);
 
-    const products = await getProductsByTag(PAGE_CONFIG.tag, {
+    const filterOptions = {
         sort: sParams.sort as any,
         minPrice: sParams.minPrice ? parseInt(sParams.minPrice as string) : undefined,
         maxPrice: sParams.maxPrice ? parseInt(sParams.maxPrice as string) : undefined,
         sizes: sParams.size ? (sParams.size as string).split(",") : undefined,
-        
         inStock: sParams.inStock === "true",
-    });
+    };
+
+    const products = isDefaultFilter(filterOptions)
+        ? await getProductsByTagDefault(PAGE_CONFIG.tag)
+        : await getProductsByTag(PAGE_CONFIG.tag, filterOptions);
 
     const landing = await getSEOLandingPage(PAGE_CONFIG.slug);
 

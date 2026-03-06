@@ -1,4 +1,4 @@
-import { getProductsByTag, getSEOLandingPage } from "@/lib/products";
+import { getProductsByTag, getProductsByTagDefault, isDefaultFilter, getSEOLandingPage } from "@/lib/products";
 import { TagCategoryPage } from "@/components/product/TagCategoryPage";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
@@ -40,14 +40,17 @@ export default async function PremiumPage({ params, searchParams }: PremiumPageP
     const sParams = await searchParams;
     setRequestLocale(locale);
 
-    const products = await getProductsByTag(PAGE_CONFIG.tag, {
+    const filterOptions = {
         sort: sParams.sort as any,
         minPrice: sParams.minPrice ? parseInt(sParams.minPrice as string) : undefined,
         maxPrice: sParams.maxPrice ? parseInt(sParams.maxPrice as string) : undefined,
         sizes: sParams.size ? (sParams.size as string).split(",") : undefined,
-        
         inStock: sParams.inStock === "true",
-    });
+    };
+
+    const products = isDefaultFilter(filterOptions)
+        ? await getProductsByTagDefault(PAGE_CONFIG.tag)
+        : await getProductsByTag(PAGE_CONFIG.tag, filterOptions);
 
     const landing = await getSEOLandingPage(PAGE_CONFIG.slug);
 

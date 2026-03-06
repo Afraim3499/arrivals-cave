@@ -1,4 +1,4 @@
-import { getProductsByCollection, getCollectionBySlug, searchProducts } from "@/lib/products";
+import { getProductsByCollection, getCollectionBySlug, searchProducts, getAllProductsDefault, getProductsByCollectionDefault, isDefaultFilter } from "@/lib/products";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -83,16 +83,19 @@ export default async function CollectionPage({ params, searchParams }: Collectio
         minPrice: sParams.minPrice ? parseInt(sParams.minPrice as string) : undefined,
         maxPrice: sParams.maxPrice ? parseInt(sParams.maxPrice as string) : undefined,
         sizes: sParams.size ? (sParams.size as string).split(",") : undefined,
-        
         inStock: sParams.inStock === "true",
     };
+
+    const useCache = isDefaultFilter(filterOptions);
 
     if (isAllProducts) {
         title = isEN ? "All Products" : "সকল পণ্য";
         description = isEN
             ? "Browse our complete collection of premium panjabi designs."
             : "আমাদের সম্পূর্ণ প্রিমিয়াম পাঞ্জাবি কালেকশন দেখুন।";
-        products = await searchProducts(filterOptions);
+        products = useCache
+            ? await getAllProductsDefault()
+            : await searchProducts(filterOptions);
     } else {
         const collection = await getCollectionBySlug(slug);
         if (!collection) {
@@ -101,7 +104,9 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
         title = isEN ? collection.title : collection.title_bn || collection.title;
         description = isEN ? collection.description || "" : collection.description_bn || collection.description || "";
-        products = await getProductsByCollection(collection.id, filterOptions);
+        products = useCache
+            ? await getProductsByCollectionDefault(collection.id)
+            : await getProductsByCollection(collection.id, filterOptions);
 
         const jsonLd = generateCollectionJsonLd(collection, products, locale);
 

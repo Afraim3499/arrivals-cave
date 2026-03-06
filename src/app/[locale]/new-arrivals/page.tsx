@@ -1,4 +1,4 @@
-import { searchProducts, getSEOLandingPage } from "@/lib/products";
+import { getNewArrivalsDefault } from "@/lib/products";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -8,8 +8,6 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { generatePageMeta } from "@/lib/seo";
-import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
-import type { Product } from "@/lib/products";
 
 interface NewArrivalsPageProps {
     params: Promise<{ locale: string }>;
@@ -39,17 +37,8 @@ export default async function NewArrivalsPage({ params, searchParams }: NewArriv
 
     const isEN = locale === "en";
 
-    // Fetch all products marked as new arrivals
-    const supabase = createPublicSupabaseClient();
-    let query = supabase
-        .from("products")
-        .select("*, collection:collections(*)")
-        .eq("is_active", true)
-        .eq("is_new_arrival", true)
-        .order("created_at", { ascending: false });
-
-    const { data, error } = await query;
-    const products = (error ? [] : data) as Product[];
+    // Use cached default listing (no collection join, 1h TTL)
+    const products = await getNewArrivalsDefault();
 
     const title = isEN ? "New Arrivals" : "নতুন আগমন";
     const description = isEN
