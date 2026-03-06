@@ -216,3 +216,76 @@ export const getProductsByCollection = async (collectionId: string, options: Par
 export const getProductsByTag = async (tag: string, options: Partial<ProductFilter> = {}) => {
     return searchProducts({ ...options, tag });
 };
+
+// --- Default listing helpers (cached, no collection join) ---
+
+/**
+ * Returns true when the filter represents the default/unfiltered shop page.
+ * Used by the shop route to decide between cached vs dynamic query paths.
+ */
+export function isDefaultFilter(filter: Partial<ProductFilter>): boolean {
+    return (
+        !filter.q &&
+        !filter.tag &&
+        filter.minPrice === undefined &&
+        filter.maxPrice === undefined &&
+        (!filter.sizes || filter.sizes.length === 0) &&
+        !filter.inStock &&
+        (!filter.sort || filter.sort === "newest") &&
+        !filter.limit &&
+        !filter.offset
+    );
+}
+
+/**
+ * Cached default listing: all active products, newest first, no collection join.
+ * Used when /shop/all has no query-string filters.
+ */
+const _getAllProductsDefaultCached = unstable_cache(
+    async () => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching all products (default):", error);
+            return [];
+        }
+        return data as Product[];
+    },
+    ["all-products-default"],
+    { revalidate: 3600 }
+);
+
+export const getAllProductsDefault = cache(() => _getAllProductsDefaultCached());
+
+/**
+ * Cached default listing: products in a specific collection, newest first, no collection join.
+ * Used when /shop/{collection} has no query-string filters.
+ */
+const _getProductsByCollectionDefaultCached = unstable_cache(
+    async (collectionId: string) => {
+        const supabase = createPublicSupabaseClient();
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .eq("collection_id", collectionId)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching collection products (default):", error);
+            return [];
+        }
+        return data as Product[];
+    },
+    ["collection-products-default"],
+    { revalidate: 3600 }
+);
+
+export const getProductsByCollectionDefault = cache(
+    (collectionId: string) => _getProductsByCollectionDefaultCached(collectionId)
+);

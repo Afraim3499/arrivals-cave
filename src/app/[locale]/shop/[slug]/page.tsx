@@ -1,4 +1,12 @@
-import { getProductsByCollection, getCollectionBySlug, searchProducts, getCollections } from "@/lib/products";
+import {
+    getProductsByCollection,
+    getCollectionBySlug,
+    searchProducts,
+    getCollections,
+    getAllProductsDefault,
+    getProductsByCollectionDefault,
+    isDefaultFilter,
+} from "@/lib/products";
 import { Container } from "@/components/layout/Container";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -96,12 +104,18 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
         inStock: sParams.inStock === "true",
     };
 
+    // Use cached default queries when no filters are active (bots, organic traffic)
+    // Fall back to uncached searchProducts for filtered requests
+    const useDefaultPath = isDefaultFilter(filterOptions);
+
     if (isAllProducts) {
         title = isEN ? "All Products" : "সকল পণ্য";
         description = isEN
             ? "Browse our complete collection of premium panjabi designs."
             : "আমাদের সম্পূর্ণ প্রিমিয়াম পাঞ্জাবি কালেকশন দেখুন।";
-        products = await searchProducts(filterOptions);
+        products = useDefaultPath
+            ? await getAllProductsDefault()
+            : await searchProducts(filterOptions);
     } else {
         collection = await getCollectionBySlug(slug);
         if (!collection) {
@@ -110,7 +124,9 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
 
         title = isEN ? collection.title : collection.title_bn || collection.title;
         description = isEN ? collection.description || "" : collection.description_bn || collection.description || "";
-        products = await getProductsByCollection(collection.id, filterOptions);
+        products = useDefaultPath
+            ? await getProductsByCollectionDefault(collection.id)
+            : await getProductsByCollection(collection.id, filterOptions);
     }
 
     // Common SEO stats extraction 
