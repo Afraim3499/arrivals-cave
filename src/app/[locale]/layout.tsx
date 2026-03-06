@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MobileStickyBar } from "@/components/layout/MobileStickyBar";
 import { GlobalSchema } from "@/components/seo/GlobalSchema";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // import { Toaster } from "sonner"; 
 
 // Using standard variables
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
                     <MobileStickyBar />
                     {/* <Toaster /> */}
                     <GlobalSchema />
+                    <SpeedInsights />
                 </NextIntlClientProvider>
 
                 {/* GA4 Script Holder (Delayed ID) */}
