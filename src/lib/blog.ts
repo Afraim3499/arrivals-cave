@@ -7,43 +7,43 @@ import { Database } from "@/lib/types/database";
 export type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 export type SeoPage = Database["public"]["Tables"]["seo_landing_pages"]["Row"];
 
-const _getRecentPostsCached = unstable_cache(
-    async (limit: number) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("blog_posts")
-            .select("*")
-            .eq("is_published", true)
-            .order("published_at", { ascending: false })
-            .limit(limit);
+export const getRecentPosts = cache(async (limit = 3) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("blog_posts")
+                .select("*")
+                .eq("is_published", true)
+                .order("published_at", { ascending: false })
+                .limit(limit);
 
-        if (error) return [];
-        return data as BlogPost[];
-    },
-    ["recent-posts"],
-    { revalidate: 3600 }
-);
+            if (error) return [];
+            return data as BlogPost[];
+        },
+        ["recent-posts", limit.toString()],
+        { revalidate: 3600 }
+    )();
+});
 
-export const getRecentPosts = cache((limit = 3) => _getRecentPostsCached(limit));
+export const getPostBySlug = cache(async (slug: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("blog_posts")
+                .select("*")
+                .eq("slug", slug)
+                .eq("is_published", true)
+                .single();
 
-const _getPostBySlugCached = unstable_cache(
-    async (slug: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("blog_posts")
-            .select("*")
-            .eq("slug", slug)
-            .eq("is_published", true)
-            .single();
-
-        if (error) return null;
-        return data as BlogPost;
-    },
-    ["post-by-slug"],
-    { revalidate: 86400 }
-);
-
-export const getPostBySlug = cache((slug: string) => _getPostBySlugCached(slug));
+            if (error) return null;
+            return data as BlogPost;
+        },
+        ["post-by-slug", slug],
+        { revalidate: 86400 }
+    )();
+});
 
 export const getPostsByCluster = async (
     cluster: "eid" | "price-city" | "style" | "sizing" | "general"

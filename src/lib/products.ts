@@ -161,59 +161,59 @@ export const getEidPicks = async (limit = 4) => {
     return data as Product[];
 };
 
-const _getProductBySlugCached = unstable_cache(
-    async (slug: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("products")
-            .select("*, collection:collections(*)")
-            .eq("slug", slug)
-            .single();
+export const getProductBySlug = cache(async (slug: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("products")
+                .select("*, collection:collections(*)")
+                .eq("slug", slug)
+                .single();
 
-        if (error) return null;
-        return data as Product;
-    },
-    ["product-by-slug"],
-    { revalidate: 1800 }
-);
+            if (error) return null;
+            return data as Product;
+        },
+        ["product-by-slug", slug],
+        { revalidate: 1800 }
+    )();
+});
 
-export const getProductBySlug = cache((slug: string) => _getProductBySlugCached(slug));
+export const getCollectionBySlug = cache(async (slug: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("collections")
+                .select("*")
+                .eq("slug", slug)
+                .single();
 
-const _getCollectionBySlugCached = unstable_cache(
-    async (slug: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("collections")
-            .select("*")
-            .eq("slug", slug)
-            .single();
+            if (error) return null;
+            return data as Collection;
+        },
+        ["collection-by-slug", slug],
+        { revalidate: 3600 }
+    )();
+});
 
-        if (error) return null;
-        return data as Collection;
-    },
-    ["collection-by-slug"],
-    { revalidate: 3600 }
-);
+export const getSEOLandingPage = cache(async (slug: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("seo_landing_pages")
+                .select("*")
+                .eq("slug", slug)
+                .single();
 
-export const getCollectionBySlug = cache((slug: string) => _getCollectionBySlugCached(slug));
-
-const _getSEOLandingPageCached = unstable_cache(
-    async (slug: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("seo_landing_pages")
-            .select("*")
-            .eq("slug", slug)
-            .single();
-
-        if (error) return null;
-        return data as Database["public"]["Tables"]["seo_landing_pages"]["Row"];
-    },
-    ["seo-landing-page"],
-    { revalidate: 86400 }
-);
-
-export const getSEOLandingPage = cache((slug: string) => _getSEOLandingPageCached(slug));
+            if (error) return null;
+            return data as Database["public"]["Tables"]["seo_landing_pages"]["Row"];
+        },
+        ["seo-landing-page", slug],
+        { revalidate: 86400 }
+    )();
+});
 
 export const getProductsByCollection = async (collectionId: string, options: Partial<ProductFilter> = {}) => {
     return searchProducts({ ...options, collectionId });
@@ -272,57 +272,53 @@ export const getAllProductsDefault = cache(() => _getAllProductsDefaultCached())
  * Cached default listing: products in a specific collection, newest first, no collection join.
  * Used when /shop/{collection} has no query-string filters.
  */
-const _getProductsByCollectionDefaultCached = unstable_cache(
-    async (collectionId: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("products")
-            .select("*")
-            .eq("is_active", true)
-            .eq("collection_id", collectionId)
-            .order("created_at", { ascending: false });
+export const getProductsByCollectionDefault = cache(async (collectionId: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("products")
+                .select("*")
+                .eq("is_active", true)
+                .eq("collection_id", collectionId)
+                .order("created_at", { ascending: false });
 
-        if (error) {
-            console.error("Error fetching collection products (default):", error);
-            return [];
-        }
-        return data as Product[];
-    },
-    ["collection-products-default"],
-    { revalidate: 3600 }
-);
-
-export const getProductsByCollectionDefault = cache(
-    (collectionId: string) => _getProductsByCollectionDefaultCached(collectionId)
-);
+            if (error) {
+                console.error("Error fetching collection products (default):", error);
+                return [];
+            }
+            return data as Product[];
+        },
+        ["collection-products-default", collectionId],
+        { revalidate: 3600 }
+    )();
+});
 
 /**
  * Cached default listing: products by tag, newest first, no collection join.
  * Used by tag-based SEO pages (black-panjabi, eid-collection, etc.) when no filters are active.
  */
-const _getProductsByTagDefaultCached = unstable_cache(
-    async (tag: string) => {
-        const supabase = createPublicSupabaseClient();
-        const { data, error } = await supabase
-            .from("products")
-            .select("*")
-            .eq("is_active", true)
-            .contains("tags", [tag])
-            .order("created_at", { ascending: false });
+export const getProductsByTagDefault = cache(async (tag: string) => {
+    return unstable_cache(
+        async () => {
+            const supabase = createPublicSupabaseClient();
+            const { data, error } = await supabase
+                .from("products")
+                .select("*")
+                .eq("is_active", true)
+                .contains("tags", [tag])
+                .order("created_at", { ascending: false });
 
-        if (error) {
-            console.error("Error fetching tag products (default):", error);
-            return [];
-        }
-        return data as Product[];
-    },
-    ["tag-products-default"],
-    { revalidate: 3600 }
-);
-
-export const getProductsByTagDefault = cache(
-    (tag: string) => _getProductsByTagDefaultCached(tag)
-);
+            if (error) {
+                console.error("Error fetching tag products (default):", error);
+                return [];
+            }
+            return data as Product[];
+        },
+        ["tag-products-default", tag],
+        { revalidate: 3600 }
+    )();
+});
 
 /**
  * Cached default listing: new arrival products, newest first, no collection join.
