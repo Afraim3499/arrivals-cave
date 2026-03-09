@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAdminOrders, updateOrderStatus } from "./actions";
-import { Loader2, Package, RefreshCcw, Search, ExternalLink } from "lucide-react";
+import { getAdminOrders, updateOrderStatus, deleteOrder } from "./actions";
+import { Loader2, Package, RefreshCcw, Search, ExternalLink, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -30,6 +30,17 @@ export default function AdminOrdersPage() {
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         await updateOrderStatus(orderId, newStatus, "Pending"); // still passing cashback status to not break backend signature yet
+    };
+
+    const handleDeleteOrder = async (orderId: string) => {
+        if (!confirm("Are you sure you want to permanently delete this order? This cannot be undone.")) return;
+        
+        const res = await deleteOrder(orderId);
+        if (res.success) {
+            setOrders(orders.filter(o => o.id !== orderId));
+        } else {
+            alert("Failed to delete order: " + res.error);
+        }
     };
 
     const filteredOrders = orders.filter(order => {
@@ -166,13 +177,23 @@ export default function AdminOrdersPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link
-                                                href={`/en/track-order?id=${order.friendly_id}&phone=${order.customer_phone}`}
-                                                target="_blank"
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-800 hover:bg-orange-500 hover:text-white rounded-lg text-xs font-medium transition-colors border border-neutral-700 hover:border-orange-500"
-                                            >
-                                                View Live <ExternalLink size={14} />
-                                            </Link>
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/en/track-order?id=${order.friendly_id}&phone=${order.customer_phone}`}
+                                                    target="_blank"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-800 hover:bg-orange-500 hover:text-white rounded-lg text-xs font-medium transition-colors border border-neutral-700 hover:border-orange-500"
+                                                    title="View Live Order Page"
+                                                >
+                                                    <ExternalLink size={14} /> View
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteOrder(order.id)}
+                                                    className="p-1.5 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                                                    title="Delete Order"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

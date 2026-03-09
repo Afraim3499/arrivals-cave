@@ -130,3 +130,28 @@ export async function updateOrderStatus(orderId: string, status: string, cashbac
         return { success: false, error: error.message };
     }
 }
+
+export async function deleteOrder(orderId: string) {
+    try {
+        // Due to foreign key constraints, we should either ensure ON DELETE CASCADE is set on order_items,
+        // or manually delete order_items first. Let's do it manually to be safe.
+        const { error: itemsError } = await supabase
+            .from("order_items")
+            .delete()
+            .eq("order_id", orderId);
+
+        if (itemsError) throw new Error(itemsError.message);
+
+        const { error: orderError } = await supabase
+            .from("orders")
+            .delete()
+            .eq("id", orderId);
+
+        if (orderError) throw new Error(orderError.message);
+
+        revalidatePath("/[locale]/portal/orders");
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
