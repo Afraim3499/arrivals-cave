@@ -155,3 +155,28 @@ export async function deleteOrder(orderId: string) {
         return { success: false, error: error.message };
     }
 }
+
+export async function deleteOrders(orderIds: string[]) {
+    try {
+        if (!orderIds || orderIds.length === 0) return { success: true };
+
+        const { error: itemsError } = await supabase
+            .from("order_items")
+            .delete()
+            .in("order_id", orderIds);
+
+        if (itemsError) throw new Error(itemsError.message);
+
+        const { error: orderError } = await supabase
+            .from("orders")
+            .delete()
+            .in("id", orderIds);
+
+        if (orderError) throw new Error(orderError.message);
+
+        revalidatePath("/[locale]/portal/orders");
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
