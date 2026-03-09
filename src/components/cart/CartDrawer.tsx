@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { CheckoutModal } from "@/components/cart/CheckoutModal";
+import { validatePromoCode } from "@/app/[locale]/portal/promo-codes/actions";
 
 export function CartDrawer() {
     const {
@@ -50,12 +51,11 @@ export function CartDrawer() {
         setPromoInput(code); // ensure input reflects code if auto-applied
         
         try {
-            // For now, hardcode EIDSALAMI validation. 
-            // In a real scenario, this would call an API.
-            if (code.toUpperCase() === 'EIDSALAMI' || code.toUpperCase() === 'EID SALAMI') {
-                setPromoCode({ code: 'EIDSALAMI', discount: 10 });
+            const res = await validatePromoCode(code);
+            if (res.success && res.discount) {
+                setPromoCode({ code: code.toUpperCase(), discount: res.discount });
             } else {
-                setPromoError("Invalid promo code");
+                setPromoError(res.error || "Invalid promo code");
                 setPromoCode(null);
             }
         } catch (err) {

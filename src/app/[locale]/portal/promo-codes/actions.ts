@@ -22,6 +22,25 @@ export async function getPromoCodes() {
     }
 }
 
+export async function validatePromoCode(code: string) {
+    try {
+        const { data: promoCode, error } = await supabase
+            .from("promo_codes")
+            .select("*")
+            .eq("code", code.toUpperCase())
+            .eq("is_active", true)
+            .single();
+
+        if (error || !promoCode) {
+            return { success: false, error: "Invalid or inactive promo code" };
+        }
+
+        return { success: true, discount: promoCode.discount_percent };
+    } catch (error: any) {
+        return { success: false, error: "Failed to validate promo code" };
+    }
+}
+
 export async function createPromoCode(code: string, discount_percent: number, is_active: boolean = true) {
     try {
         const { error } = await supabase

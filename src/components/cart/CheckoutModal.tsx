@@ -16,6 +16,7 @@ import { useEffect } from "react";
 
 import Image from "next/image";
 import { createOrder } from "@/app/[locale]/portal/orders/actions";
+import { validatePromoCode } from "@/app/[locale]/portal/promo-codes/actions";
 
 interface CheckoutModalProps {
     isOpen: boolean;
@@ -164,10 +165,11 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         setPromoInput(code);
         
         try {
-            if (code.toUpperCase() === 'EIDSALAMI' || code.toUpperCase() === 'EID SALAMI') {
-                setPromoCode({ code: 'EIDSALAMI', discount: 10 });
+            const res = await validatePromoCode(code);
+            if (res.success && res.discount) {
+                setPromoCode({ code: code.toUpperCase(), discount: res.discount });
             } else {
-                setPromoError("Invalid promo code");
+                setPromoError(res.error || "Invalid promo code");
                 setPromoCode(null);
             }
         } catch (err) {
