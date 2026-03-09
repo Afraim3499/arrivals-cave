@@ -11,6 +11,7 @@ export interface CartItem {
 interface CartState {
     items: CartItem[];
     isOpen: boolean;
+    appliedPromo: { code: string; discount: number } | null;
     addItem: (product: Product, size: string) => void;
     removeItem: (productId: string, size: string) => void;
     updateQuantity: (productId: string, size: string, quantity: number) => void;
@@ -22,6 +23,7 @@ interface CartState {
     // Computed (helper, not state)
     getTotal: () => number;
     getCount: () => number;
+    setPromoCode: (promo: { code: string; discount: number } | null) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -29,6 +31,7 @@ export const useCartStore = create<CartState>()(
         (set, get) => ({
             items: [],
             isOpen: false,
+            appliedPromo: null,
 
             addItem: (product, size) => {
                 set((state) => {
@@ -86,12 +89,15 @@ export const useCartStore = create<CartState>()(
             toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
             openCart: () => set({ isOpen: true }),
             closeCart: () => set({ isOpen: false }),
+            
+            setPromoCode: (promo) => set({ appliedPromo: promo }),
 
             getTotal: () => {
-                const { items } = get();
+                const { items, appliedPromo } = get();
+                const discount = appliedPromo?.discount || 0;
                 return items.reduce(
                     (total, item) => {
-                        const { currentPrice } = getProductPrices(item.product);
+                        const { currentPrice } = getProductPrices(item.product, discount);
                         return total + currentPrice * item.quantity;
                     },
                     0
@@ -106,8 +112,8 @@ export const useCartStore = create<CartState>()(
         {
             name: "cart-storage",
             storage: createJSONStorage(() => localStorage),
-            // Only persist items, not isOpen state
-            partialize: (state) => ({ items: state.items }),
+            // Only persist items and promo, not isOpen state
+            partialize: (state) => ({ items: state.items, appliedPromo: state.appliedPromo }),
         }
     )
 );

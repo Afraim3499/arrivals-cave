@@ -153,32 +153,20 @@ function TrackOrderContent() {
                                         </div>
                                         <div>
                                             <p className="text-muted-foreground mb-1">Amount</p>
-                                            <p className="font-bold text-primary">৳{orderData.subtotal.toLocaleString()}</p>
+                                            <div className="flex flex-col">
+                                                <p className="font-bold text-primary">৳{orderData.subtotal.toLocaleString()}</p>
+                                                {orderData.promo_code && (
+                                                    <span className="text-[10px] text-emerald-500 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-full inline-block mt-1 w-max">
+                                                        Code: {orderData.promo_code}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Cashback Status Card */}
-                            {orderData.cashback_earned > 0 && (
-                                <div className={`border rounded-2xl p-6 md:p-8 ${orderData.cashback_status === 'Paid' ? 'bg-[#20BD5A]/10 border-[#20BD5A]/30' : 'bg-primary/5 border-primary/20'}`}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center text-primary">💰</div>
-                                            <div>
-                                                <h3 className="font-bold text-lg text-primary">Cashback Offer</h3>
-                                                <p className="text-sm text-muted-foreground">Cashback Earned: ৳{orderData.cashback_earned}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${orderData.cashback_status === 'Paid' ? 'bg-[#20BD5A] text-white' : 'bg-primary/20 text-primary'}`}>
-                                                {orderData.cashback_status === 'Paid' ? 'Paid to Phone' : 'Pending Full Payment'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-4 italic">* Cashback is sent to the phone number associated with the order after final delivery is confirmed and payment is collected.</p>
-                                </div>
-                            )}
+                            {/* Deprecated Cashback Card Removed */}
 
                             {/* Items Card */}
                             <div className="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8">

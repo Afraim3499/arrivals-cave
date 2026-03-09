@@ -1,10 +1,5 @@
 [
   {
-    "title": "Shamsheer",
-    "slug": "shamsheer-bs-5001",
-    "code": "BS-5001"
-  },
-  {
     "title": "Rameen",
     "slug": "rameen-br-5002",
     "code": "BR-5002"
@@ -20,16 +15,6 @@
     "code": "HG-1001"
   },
   {
-    "title": "Neelkaar",
-    "slug": "neelkaar-mn-2001",
-    "code": "MN-2001"
-  },
-  {
-    "title": "Subhkaar",
-    "slug": "subhkaar-ms-2002",
-    "code": "MS-2002"
-  },
-  {
     "title": "Nehaj",
     "slug": "nehaj-mn-2003",
     "code": "MN-2003"
@@ -38,31 +23,6 @@
     "title": "Noor",
     "slug": "noor-mn-2004",
     "code": "MN-2004"
-  },
-  {
-    "title": "Zayan",
-    "slug": "zayan-mz-2005",
-    "code": "MZ-2005"
-  },
-  {
-    "title": "Wazir",
-    "slug": "wazir-zw-3001",
-    "code": "ZW-3001"
-  },
-  {
-    "title": "Sabzar",
-    "slug": "sabzar-zs-3002",
-    "code": "ZS-3002"
-  },
-  {
-    "title": "Shahan",
-    "slug": "shahan-ss-4002",
-    "code": "SS-4002"
-  },
-  {
-    "title": "Aftab",
-    "slug": "aftab-sa-4003",
-    "code": "SA-4003"
   },
   {
     "title": "Arzoo",
@@ -75,6 +35,31 @@
     "code": "HA-1003"
   },
   {
+    "title": "Neelkaar",
+    "slug": "neelkaar-mn-2001",
+    "code": "MN-2001"
+  },
+  {
+    "title": "Subhkaar",
+    "slug": "subhkaar-ms-2002",
+    "code": "MS-2002"
+  },
+  {
+    "title": "Shamsheer",
+    "slug": "shamsheer-bs-5001",
+    "code": "BS-5001"
+  },
+  {
+    "title": "Wazir",
+    "slug": "wazir-zw-3001",
+    "code": "ZW-3001"
+  },
+  {
+    "title": "Sabzar",
+    "slug": "sabzar-zs-3002",
+    "code": "ZS-3002"
+  },
+  {
     "title": "Neelash",
     "slug": "neelash-zn-3003",
     "code": "ZN-3003"
@@ -83,5 +68,20 @@
     "title": "Arsham",
     "slug": "arsham-sa-4001",
     "code": "SA-4001"
+  },
+  {
+    "title": "Shahan",
+    "slug": "shahan-ss-4002",
+    "code": "SS-4002"
+  },
+  {
+    "title": "Zayan",
+    "slug": "zayan-mz-2005",
+    "code": "MZ-2005"
+  },
+  {
+    "title": "Aftab",
+    "slug": "aftab-sa-4003",
+    "code": "SA-4003"
   }
 ]

@@ -113,14 +113,14 @@ export function Hero({ settings }: HeroProps) {
                         <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-5 flex flex-col justify-center items-center text-center border border-primary/20 shadow-sm relative overflow-hidden group shrink-0">
                             <div className="absolute inset-0 bg-grid-subtle text-primary/5 pattern-opacity-50" />
                             <div className="relative z-10 w-full space-y-2">
-                                <span className="inline-block px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm">
-                                    Special Offer
+                                <span className="inline-block px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm animate-pulse">
+                                    Eid Special Offer
                                 </span>
                                 <h3 className="font-display text-xl font-bold text-foreground leading-tight">
-                                    20% Discount
+                                    10% Discount
                                 </h3>
                                 <p className="text-xs text-foreground/80 font-medium">
-                                    On Every Panjabi Order!
+                                    Use code <span className="font-bold text-primary">EIDSALAMI</span> at checkout!
                                 </p>
                                 <Button asChild size="sm" className="w-full mt-2 bg-primary hover:bg-primary/90 shadow-md transition-all group-hover:scale-[1.02]">
                                     <Link href="/shop/all">

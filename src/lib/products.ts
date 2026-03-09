@@ -21,14 +21,19 @@ export interface ProductFilter {
     offset?: number;
 }
 
-export function getProductPrices(product: { price: number; compare_at_price?: number | null }) {
-    const discountPercent = 20;
-    const isDiscounted = true;
-    const originalPrice = product.price;
-    const currentPrice = Math.round(product.price * 0.8);
+export function getProductPrices(product: { price: number; compare_at_price?: number | null }, discountPercent: number = 0) {
+    const isDiscounted = discountPercent > 0 || (product.compare_at_price != null && product.compare_at_price > product.price);
+    const originalPrice = product.compare_at_price || product.price;
+    
+    // Apply discount percentage if provided
+    let currentPrice = product.price;
+    if (discountPercent > 0) {
+        currentPrice = Math.round(product.price * (1 - (discountPercent / 100)));
+    }
 
     return { isDiscounted, currentPrice, originalPrice, discountPercent };
 }
+
 
 // --- Server-side Queries (Public) ---
 

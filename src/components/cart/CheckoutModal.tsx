@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/stores/cart-store";
 import { buildWhatsAppMessage, buildWhatsAppURL } from "@/lib/whatsapp";
 import { Product, getProductPrices } from "@/lib/products";
-import { X, MapPin, Phone, User, Building2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
+import { X, MapPin, Phone, User, Building2, CheckCircle2, Loader2, ArrowRight, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { analytics } from "@/lib/analytics";
 import { useEffect } from "react";
@@ -31,14 +31,15 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: CheckoutModalProps) {
-    const { items: cartItems, getTotal } = useCartStore();
+    const { items: cartItems, getTotal, appliedPromo, setPromoCode } = useCartStore();
     const isDirect = !!directProduct;
 
     const items = isDirect ? [{ product: directProduct!, size: directSize || "Free Size", quantity: 1 }] : cartItems;
-    const subtotal = isDirect ? directProduct!.price : getTotal();
-    const maxCashback = 680;
-    const units = Math.floor(subtotal / 3100);
-    const potentialCashback = Math.min(units * 170, maxCashback);
+    
+    // For direct purchases (Buy Now), we still need to calculate the discount if a promo is applied globally
+    const directDiscount = appliedPromo?.discount || 0;
+    const directPrice = isDirect ? Math.round(directProduct!.price * (1 - (directDiscount / 100))) : 0;
+    const subtotal = isDirect ? directPrice : getTotal();
 
     const [step, setStep] = useState<"form" | "summary" | "success">("form");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,11 +52,15 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         notes: ""
     });
 
+    const [promoInput, setPromoInput] = useState("");
+    const [promoError, setPromoError] = useState("");
+    const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+
     useEffect(() => {
         if (isOpen) {
             analytics.beginCheckout(
                 items.map((item) => {
-                    const { currentPrice } = getProductPrices(item.product as any);
+                    const { currentPrice } = getProductPrices(item.product as any, appliedPromo?.discount || 0);
                     return {
                         code: (item.product as any).code || item.product.id,
                         slug: (item.product as any).slug || (item.product as any).code,
@@ -82,8 +87,8 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
         const response = await createOrder({
             ...formData,
             subtotal,
-            cashback_earned: potentialCashback
-        }, items);
+            promo_code: appliedPromo?.code || null
+        }, items, appliedPromo?.discount || 0);
 
         if (response.success && response.friendlyId) {
             setOrderId(response.friendlyId);
@@ -130,11 +135,14 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
 
         message += `\n*Order Items*\n`;
         items.forEach((item) => {
-            message += `• ${item.product.title} (Size: ${item.size}) x ${item.quantity}\n`;
+            const { currentPrice } = getProductPrices(item.product as any, appliedPromo?.discount || 0);
+            message += `• ${item.product.title} (Size: ${item.size}) x ${item.quantity} = ৳${currentPrice * item.quantity}\n`;
         });
         message += `\n*Subtotal:* ৳${subtotal.toLocaleString()}\n`;
+        if (appliedPromo) {
+            message += `*Promo Applied:* ${appliedPromo.code} (-${appliedPromo.discount}%)\n`;
+        }
         message += `*Total Amount:* ${totalWithDelivery}\n`;
-        message += `*Cashback Earned:* ৳${potentialCashback.toLocaleString()}\n`;
         message += `\n*Track Order:* ${trackingLink}\n`;
         message += `\nPlease confirm my delivery!`;
 
@@ -145,8 +153,34 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
 
         // Auto Redirect User to tracking page after a tiny delay so mobile browsers don't kill the popup
         setTimeout(() => {
+            setPromoCode(null); // clear promo
             window.location.href = `/order-confirmed?id=${orderId}&phone=${formData.phone}`;
         }, 500);
+    };
+
+    const handleApplyPromo = async (code: string) => {
+        setIsValidatingPromo(true);
+        setPromoError("");
+        setPromoInput(code);
+        
+        try {
+            if (code.toUpperCase() === 'EIDSALAMI' || code.toUpperCase() === 'EID SALAMI') {
+                setPromoCode({ code: 'EIDSALAMI', discount: 10 });
+            } else {
+                setPromoError("Invalid promo code");
+                setPromoCode(null);
+            }
+        } catch (err) {
+            setPromoError("Failed to apply");
+        } finally {
+            setIsValidatingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setPromoCode(null);
+        setPromoInput("");
+        setPromoError("");
     };
 
     return (
@@ -243,7 +277,7 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                         <div className="space-y-6">
                             <div className="space-y-3">
                                 {items.map((item) => {
-                                    const { currentPrice } = getProductPrices(item.product);
+                                    const { currentPrice, isDiscounted, originalPrice } = getProductPrices(item.product, appliedPromo?.discount || 0);
                                     return (
                                         <div key={`${item.product.id}-${item.size}`} className="flex gap-4 p-3 rounded-xl border border-border bg-muted/20">
                                             <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0 border border-border">
@@ -255,12 +289,64 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                                                 <h4 className="font-medium text-sm line-clamp-1">{item.product.title}</h4>
                                                 <p className="text-xs text-muted-foreground mt-1">Size: {item.size} • Qty: {item.quantity}</p>
                                             </div>
-                                            <div className="font-medium text-sm py-1">
-                                                ৳{currentPrice * item.quantity}
+                                            <div className="font-medium text-sm py-1 flex flex-col items-end">
+                                                <span>৳{currentPrice * item.quantity}</span>
+                                                {isDiscounted && <span className="text-[10px] text-muted-foreground line-through">৳{originalPrice * item.quantity}</span>}
                                             </div>
                                         </div>
                                     )
                                 })}
+                            </div>
+
+                            {/* Promo Code UI */}
+                            <div className="bg-muted/30 rounded-lg p-3 text-sm border border-border">
+                                <div className="flex flex-col gap-2">
+                                    {!appliedPromo ? (
+                                        <>
+                                            <div className="flex items-center gap-2">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Promo code"
+                                                    value={promoInput}
+                                                    onChange={(e) => setPromoInput(e.target.value)}
+                                                    className="flex-1 bg-background border border-border rounded-md px-3 py-1.5 text-sm uppercase focus:outline-none focus:border-primary"
+                                                />
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="secondary"
+                                                    onClick={() => handleApplyPromo(promoInput)}
+                                                    disabled={!promoInput || isValidatingPromo}
+                                                >
+                                                    {isValidatingPromo ? "..." : "Apply"}
+                                                </Button>
+                                            </div>
+                                            {promoError && <p className="text-xs text-destructive">{promoError}</p>}
+                                            <div className="mt-1 flex items-center justify-between bg-primary/10 border border-primary/20 rounded p-2 cursor-pointer hover:bg-primary/20 transition-colors"
+                                                 onClick={() => handleApplyPromo('EIDSALAMI')}>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[11px] font-bold text-primary flex items-center gap-1">
+                                                        Eid Salami Offer <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span>
+                                                    </span>
+                                                    <span className="text-[10px] text-muted-foreground">Tap to apply 10% discount</span>
+                                                </div>
+                                                <span className="font-mono text-xs font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">EIDSALAMI</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded p-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">✓</span>
+                                                <div className="flex flex-col leading-tight">
+                                                    <span className="font-bold text-emerald-600 text-[11px]">{appliedPromo.code}</span>
+                                                    <span className="text-[10px] text-emerald-600/80">{appliedPromo.discount}% OFF applied!</span>
+                                                </div>
+                                            </div>
+                                            <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={handleRemovePromo}>
+                                                <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="p-4 rounded-xl border-2 border-primary/20 bg-primary/5 space-y-2">
@@ -271,23 +357,6 @@ export function CheckoutModal({ isOpen, onClose, directProduct, directSize }: Ch
                                 <div className="flex items-center gap-2 text-[10px] text-primary uppercase font-bold tracking-widest">
                                     <Loader2 className="h-3 w-3 animate-spin" /> Saving direct to CRM
                                 </div>
-                            </div>
-
-                            {/* Cashback Offer UI in Checkout */}
-                            <div className="bg-primary/5 rounded-lg p-3 text-sm border border-primary/20">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="font-semibold text-primary">Cashback Offer</span>
-                                    <span className="font-bold text-primary">৳{potentialCashback} Earned</span>
-                                </div>
-                                {potentialCashback < maxCashback ? (
-                                    <p className="text-xs text-muted-foreground">
-                                        Add <strong className="text-foreground">৳{(3100 - (subtotal % 3100)).toLocaleString()}</strong> more to earn another ৳170 cashback! (Max ৳680).
-                                    </p>
-                                ) : (
-                                    <p className="text-xs font-medium text-[#20BD5A]">
-                                        🎉 You have reached the maximum cashback of ৳680!
-                                    </p>
-                                )}
                             </div>
 
                             <div className="space-y-2">

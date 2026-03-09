@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Package, Folders, FileText, PenTool, Settings, LogOut, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Package, Folders, FileText, PenTool, Settings, LogOut, ShoppingCart, Tag } from "lucide-react";
 import { logoutFromPortal } from "./login/actions";
 
 export default function PortalLayout({ children }: { children: ReactNode }) {
@@ -21,6 +21,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
                     <NavItem href="/portal" icon={<LayoutDashboard size={20} />} label="Dashboard" />
                     <NavItem href="/portal/orders" icon={<ShoppingCart size={20} />} label="Orders" />
                     <NavItem href="/portal/products" icon={<Package size={20} />} label="Products" />
+                    <NavItem href="/portal/promo-codes" icon={<Tag size={20} />} label="Promo Codes" />
                     <NavItem href="/portal/collections" icon={<Folders size={20} />} label="Collections" />
                     <NavItem href="/portal/seo-pages" icon={<FileText size={20} />} label="SEO Pages" />
                     <NavItem href="/portal/blog" icon={<PenTool size={20} />} label="Blog" />

@@ -33,25 +33,58 @@
     "description_bn": "বিলাসবহুল ফ্যাব্রিক এবং কারিগরি"
   },
   {
-    "id": "24532aa4-2970-45d7-88e6-4cdfe70a24f0",
-    "slug": "kabli-sets",
-    "title": "Kabli Sets",
-    "description": "Traditional Kabli sets",
+    "id": "5f09310b-9f85-4c2b-af3e-99f5227c9c3e",
+    "slug": "basarah",
+    "title": "Basarah",
+    "description": "Classic Panjabi",
     "image_url": null,
     "is_active": true,
-    "created_at": "2026-02-18T03:30:29.239789+00:00",
-    "title_bn": "কাবলি সেট",
-    "description_bn": "ঐতিহ্যবাহী কাবলি সেট"
+    "created_at": "2026-02-24T02:35:25.710675+00:00",
+    "title_bn": "বাসারাহ",
+    "description_bn": "ক্লাসিক পাঞ্জাবি"
   },
   {
-    "id": "6f78d1eb-6af6-4190-8479-20f7acdb77fc",
-    "slug": "waistcoats",
-    "title": "Waistcoats",
-    "description": "Stylish waistcoats",
+    "id": "4fe38845-53b6-43d9-ad33-86a49dddc8ba",
+    "slug": "heer",
+    "title": "Heer",
+    "description": "Premium Silk",
     "image_url": null,
     "is_active": true,
-    "created_at": "2026-02-18T03:30:29.239789+00:00",
-    "title_bn": "কোটি / কটি",
-    "description_bn": "স্টাইলিশ কোটি"
+    "created_at": "2026-02-24T02:35:25.988652+00:00",
+    "title_bn": "হীর",
+    "description_bn": "প্রিমিয়াম সিল্ক"
+  },
+  {
+    "id": "f9282875-9000-400a-880a-ad75d4cd40ed",
+    "slug": "muraqsh",
+    "title": "Muraqsh",
+    "description": "Artisan Embroidery",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-24T02:35:26.197975+00:00",
+    "title_bn": "মুরাকশ",
+    "description_bn": "আর্টিজান এমব্রয়ডারি"
+  },
+  {
+    "id": "c7c88f82-9d29-4f33-b1e3-e9b08104245f",
+    "slug": "zameen",
+    "title": "Zameen",
+    "description": "Earthy Linen",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-24T02:35:26.40087+00:00",
+    "title_bn": "জমিন",
+    "description_bn": "আর্থি লিনেন"
+  },
+  {
+    "id": "05882305-7cdd-4a7e-aabb-d942521c27d0",
+    "slug": "sirash",
+    "title": "Sirash",
+    "description": "Minimal Cotton",
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-02-24T02:35:26.601331+00:00",
+    "title_bn": "সিরাশ",
+    "description_bn": "মিনিমাল কটন"
   }
 ]

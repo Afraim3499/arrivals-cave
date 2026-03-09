@@ -27,14 +27,9 @@ export default function AdminOrdersPage() {
         fetchOrders();
     }, []);
 
-    const handleStatusChange = async (orderId: string, newStatus: string, currentCashbackStatus: string) => {
+    const handleStatusChange = async (orderId: string, newStatus: string) => {
         setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-        await updateOrderStatus(orderId, newStatus, currentCashbackStatus);
-    };
-
-    const handleCashbackChange = async (orderId: string, currentStatus: string, newCashbackStatus: string) => {
-        setOrders(orders.map(o => o.id === orderId ? { ...o, cashback_status: newCashbackStatus } : o));
-        await updateOrderStatus(orderId, currentStatus, newCashbackStatus);
+        await updateOrderStatus(orderId, newStatus, "Pending"); // still passing cashback status to not break backend signature yet
     };
 
     const filteredOrders = orders.filter(order => {
@@ -116,7 +111,7 @@ export default function AdminOrdersPage() {
                                 <th className="px-6 py-4">Order ID & Date</th>
                                 <th className="px-6 py-4">Customer</th>
                                 <th className="px-6 py-4">Items & Area</th>
-                                <th className="px-6 py-4">Total & Cashback</th>
+                                <th className="px-6 py-4">Total & Promo</th>
                                 <th className="px-6 py-4">Live Status</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
@@ -149,9 +144,9 @@ export default function AdminOrdersPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="font-bold">৳{order.subtotal.toLocaleString()}</div>
-                                            {order.cashback_earned > 0 && (
-                                                <div className="text-emerald-500 text-xs mt-1 font-medium">
-                                                    + ৳{order.cashback_earned} CB
+                                            {order.promo_code && (
+                                                <div className="text-emerald-500 text-xs mt-1 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-full inline-block">
+                                                    Code: {order.promo_code}
                                                 </div>
                                             )}
                                         </td>
@@ -159,7 +154,7 @@ export default function AdminOrdersPage() {
                                             <div className="flex flex-col gap-2">
                                                 <select
                                                     value={order.status}
-                                                    onChange={(e) => handleStatusChange(order.id, e.target.value, order.cashback_status)}
+                                                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                                     className={`px-3 py-1.5 rounded-full text-xs font-bold border cursor-pointer outline-none appearance-none ${getStatusColor(order.status)}`}
                                                 >
                                                     <option value="Pending">Pending</option>
@@ -168,17 +163,6 @@ export default function AdminOrdersPage() {
                                                     <option value="Delivered">Delivered</option>
                                                     <option value="Cancelled">Cancelled</option>
                                                 </select>
-
-                                                {order.cashback_earned > 0 && (
-                                                    <select
-                                                        value={order.cashback_status}
-                                                        onChange={(e) => handleCashbackChange(order.id, order.status, e.target.value)}
-                                                        className={`px-3 py-1.5 rounded-full text-xs font-bold border cursor-pointer outline-none appearance-none ${order.cashback_status === 'Paid' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-neutral-800 text-neutral-400 border-neutral-700'}`}
-                                                    >
-                                                        <option value="Pending">CB Pending</option>
-                                                        <option value="Paid">CB Paid</option>
-                                                    </select>
-                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">

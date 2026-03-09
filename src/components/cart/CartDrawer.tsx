@@ -27,8 +27,14 @@ export function CartDrawer() {
         updateQuantity,
         getTotal,
         clearCart,
+        appliedPromo,
+        setPromoCode,
     } = useCartStore();
     const t = useTranslations("cart");
+
+    const [promoInput, setPromoInput] = useState("");
+    const [promoError, setPromoError] = useState("");
+    const [isValidatingPromo, setIsValidatingPromo] = useState(false);
 
     // Hydration fix
     const [isMounted, setIsMounted] = useState(false);
@@ -37,6 +43,33 @@ export function CartDrawer() {
     useEffect(() => setIsMounted(true), []);
 
     if (!isMounted) return null;
+
+    const handleApplyPromo = async (code: string) => {
+        setIsValidatingPromo(true);
+        setPromoError("");
+        setPromoInput(code); // ensure input reflects code if auto-applied
+        
+        try {
+            // For now, hardcode EIDSALAMI validation. 
+            // In a real scenario, this would call an API.
+            if (code.toUpperCase() === 'EIDSALAMI' || code.toUpperCase() === 'EID SALAMI') {
+                setPromoCode({ code: 'EIDSALAMI', discount: 10 });
+            } else {
+                setPromoError("Invalid promo code");
+                setPromoCode(null);
+            }
+        } catch (err) {
+            setPromoError("Failed to apply promo code");
+        } finally {
+            setIsValidatingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setPromoCode(null);
+        setPromoInput("");
+        setPromoError("");
+    };
 
     const handleCheckoutClick = () => {
         closeCart(); // Close the cart drawer
@@ -73,7 +106,7 @@ export function CartDrawer() {
                             <ScrollArea className="h-full pr-4">
                                 <div className="space-y-6">
                                     {items.map((item) => {
-                                        const { isDiscounted, currentPrice, originalPrice } = getProductPrices(item.product);
+                                        const { isDiscounted, currentPrice, originalPrice } = getProductPrices(item.product, appliedPromo?.discount || 0);
 
                                         return (
                                             <div
@@ -167,42 +200,66 @@ export function CartDrawer() {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-muted-foreground">{t("subtotal")}</span>
-                                    <span className="font-medium text-foreground">৳{getTotal().toLocaleString()}</span>
+                                    <div className="flex flex-col items-end">
+                                        <span className="font-medium text-foreground">৳{getTotal().toLocaleString()}</span>
+                                        {appliedPromo && (
+                                            <span className="text-[10px] text-emerald-500 font-bold">
+                                                (-{appliedPromo.discount}% {appliedPromo.code} applied)
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Cashback Offer UI */}
-                                {(() => {
-                                    const total = getTotal();
-                                    const maxCashback = 680; // 170 * 4
-                                    const units = Math.floor(total / 3100);
-                                    const potentialCashback = Math.min(units * 170, maxCashback);
-                                    const remainder = total % 3100;
-                                    const neededForNext = 3100 - remainder;
-
-                                    return (
-                                        <div className="bg-primary/5 rounded-lg p-3 text-sm border border-primary/20">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="font-semibold text-primary">Cashback Offer</span>
-                                                <span className="font-bold text-primary">৳{potentialCashback} Earned</span>
-                                            </div>
-                                            {potentialCashback < maxCashback ? (
-                                                <>
-                                                    <div className="w-full bg-primary/20 h-2 rounded-full overflow-hidden mb-2">
-                                                        <div className="bg-primary h-full transition-all duration-500" style={{ width: `${(remainder / 3100) * 100}%` }} />
+                                {/* Promo Code UI */}
+                                <div className="bg-muted/30 rounded-lg p-3 text-sm border border-border">
+                                    <div className="flex flex-col gap-2">
+                                        {!appliedPromo ? (
+                                            <>
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Promo code"
+                                                        value={promoInput}
+                                                        onChange={(e) => setPromoInput(e.target.value)}
+                                                        className="flex-1 bg-background border border-border rounded-md px-3 py-1.5 text-sm uppercase focus:outline-none focus:border-primary"
+                                                    />
+                                                    <Button 
+                                                        size="sm" 
+                                                        variant="secondary"
+                                                        onClick={() => handleApplyPromo(promoInput)}
+                                                        disabled={!promoInput || isValidatingPromo}
+                                                    >
+                                                        {isValidatingPromo ? "..." : "Apply"}
+                                                    </Button>
+                                                </div>
+                                                {promoError && <p className="text-xs text-destructive">{promoError}</p>}
+                                                <div className="mt-1 flex items-center justify-between bg-primary/10 border border-primary/20 rounded p-2 cursor-pointer hover:bg-primary/20 transition-colors"
+                                                     onClick={() => handleApplyPromo('EIDSALAMI')}>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[11px] font-bold text-primary flex items-center gap-1">
+                                                            Eid Salami Offer <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span></span>
+                                                        </span>
+                                                        <span className="text-[10px] text-muted-foreground">Tap to apply 10% discount</span>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        Add <strong className="text-foreground">৳{neededForNext.toLocaleString()}</strong> more to earn another ৳170 cashback! (Max ৳680).
-                                                    </p>
-                                                </>
-                                            ) : (
-                                                <p className="text-xs font-medium text-[#20BD5A]">
-                                                    🎉 You have reached the maximum cashback of ৳680!
-                                                </p>
-                                            )}
-                                            <p className="text-[10px] text-muted-foreground mt-2 italic leading-tight">* Cashback will be sent via bKash or Nagad after the full payment is completed. No free shipping.</p>
-                                        </div>
-                                    );
-                                })()}
+                                                    <span className="font-mono text-xs font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">EIDSALAMI</span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded p-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">✓</span>
+                                                    <div className="flex flex-col leading-tight">
+                                                        <span className="font-bold text-emerald-600 text-[11px]">{appliedPromo.code}</span>
+                                                        <span className="text-[10px] text-emerald-600/80">{appliedPromo.discount}% OFF applied!</span>
+                                                    </div>
+                                                </div>
+                                                <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={handleRemovePromo}>
+                                                    <Trash2 className="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

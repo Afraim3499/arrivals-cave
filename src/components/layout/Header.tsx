@@ -36,8 +36,15 @@ export function Header() {
             )}
         >
             {/* Global Announcement Bar */}
-            <div className="bg-primary text-primary-foreground text-xs md:text-sm font-medium py-2 px-4 text-center">
-                Up to ৳600 off! ৳110 cashback on every ৳1,500 spent 🎁
+            <div className="bg-primary text-primary-foreground text-xs md:text-sm font-medium py-2 px-4 text-center flex items-center justify-center gap-2">
+                <span>Apply Eid Salami promo for 10% discount! Use code:</span>
+                <span className="font-bold font-mono bg-black/20 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse">
+                    EIDSALAMI
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                    </span>
+                </span>
             </div>
 
             <div className={cn("container mx-auto px-4 flex items-center justify-between transition-all duration-300", isScrolled ? "py-2" : "py-4")}>

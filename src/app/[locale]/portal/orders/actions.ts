@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { sendOrderEvents } from "@/lib/facebook-capi";
+import { getProductPrices } from "@/lib/products";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 // We use the service role key to bypass RLS for inserting admin-level data if needed,
@@ -12,7 +13,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-export async function createOrder(orderData: any, items: any[]) {
+export async function createOrder(orderData: any, items: any[], discountPercent: number = 0) {
     try {
         // Generate a friendly ID (e.g. ORD-6X9P)
         const randomString = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -30,9 +31,8 @@ export async function createOrder(orderData: any, items: any[]) {
                 city: orderData.city,
                 order_notes: orderData.notes || null,
                 subtotal: orderData.subtotal,
-                cashback_earned: orderData.cashback_earned,
+                promo_code: orderData.promo_code || null,
                 status: "Pending",
-                cashback_status: "Pending"
             })
             .select()
             .single();
@@ -40,16 +40,19 @@ export async function createOrder(orderData: any, items: any[]) {
         if (orderError) throw new Error(orderError.message);
 
         // 2. Insert the Order Items
-        const orderItemsData = items.map((item) => ({
-            order_id: order.id,
-            product_id: item.product.id,
-            product_name: item.product.title,
-            product_code: item.product.productCode || null,
-            size: item.size,
-            quantity: item.quantity,
-            price: Math.round(item.product.price * 0.8), // Storing the applied 20% discount price
-            image_url: item.product.images?.[0] || null
-        }));
+        const orderItemsData = items.map((item) => {
+            const { currentPrice } = getProductPrices(item.product, discountPercent);
+            return {
+                order_id: order.id,
+                product_id: item.product.id,
+                product_name: item.product.title,
+                product_code: item.product.productCode || null,
+                size: item.size,
+                quantity: item.quantity,
+                price: currentPrice, // Storing the actual applied price
+                image_url: item.product.images?.[0] || null
+            };
+        });
 
         const { error: itemsError } = await supabase
             .from("order_items")
