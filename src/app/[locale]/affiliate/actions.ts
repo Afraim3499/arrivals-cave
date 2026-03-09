@@ -27,7 +27,7 @@ export async function getAffiliateStats(code: string) {
         // 2. Fetch all orders that used this code
         const { data: orders, error: ordersError } = await supabase
             .from("orders")
-            .select("id, friendly_id, created_at, status, subtotal, customer_name, customer_city")
+            .select("id, friendly_id, created_at, status, subtotal, customer_name, city")
             .eq("promo_code", cleanCode)
             .order("created_at", { ascending: false });
 
