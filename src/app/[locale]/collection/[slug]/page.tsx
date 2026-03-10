@@ -5,7 +5,7 @@ import { ProductGrid } from "@/components/product/ProductGrid";
 import { FilterSidebar } from "@/components/product/FilterSidebar";
 import { SortBar } from "@/components/product/SortBar";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { generatePageMeta } from "@/lib/seo";
@@ -107,6 +107,17 @@ export default async function CollectionPage({ params, searchParams }: Collectio
         products = useCache
             ? await getProductsByCollectionDefault(collection.id)
             : await getProductsByCollection(collection.id, filterOptions);
+
+        const SEOLandingPages = [
+            'black-panjabi', 'cotton-panjabi', 'eid-kabli-set', 
+            'eid-panjabi-collection', 'eid-premium-embroidered-panjabi', 
+            'embroidered-panjabi', 'kabli-panjabi', 'premium-panjabi', 
+            'short-panjabi', 'silk-panjabi', 'white-panjabi'
+        ];
+
+        if (products.length === 0 && SEOLandingPages.includes(slug)) {
+            redirect(`/${locale}/${slug}`);
+        }
 
         const jsonLd = generateCollectionJsonLd(collection, products, locale);
 
