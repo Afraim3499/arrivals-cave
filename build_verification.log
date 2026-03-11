@@ -1,0 +1,29 @@
+
+> web@0.1.0 build /vercel/sandbox/primary
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+▲ Next.js 16.1.6 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.7s
+  Running TypeScript ...
+  Collecting page data using 1 worker ...
+Error: supabaseUrl is required.
+    at <unknown> (.next/server/chunks/ssr/f6d68_@supabase_supabase-js_dist_index_mjs_fae2bf42._.js:37:43440)
+    at new cd (.next/server/chunks/ssr/f6d68_@supabase_supabase-js_dist_index_mjs_fae2bf42._.js:37:43691)
+    at ce (.next/server/chunks/ssr/f6d68_@supabase_supabase-js_dist_index_mjs_fae2bf42._.js:37:47633)
+    at c (.next/server/chunks/ssr/src_1ce294da._.js:1:633)
+    at Object.o [as generateStaticParams] (.next/server/chunks/ssr/[root-of-the-server]__a3556ff5._.js:1:12279)
+
+> Build error occurred
+Error: Failed to collect page data for /[locale]/collection/[slug]
+    at ignore-listed frames {
+  type: 'Error'
+}
+ ELIFECYCLE  Command failed with exit code 1.

@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MobileStickyBar } from "@/components/layout/MobileStickyBar";
 import { GlobalSchema } from "@/components/seo/GlobalSchema";
+import { Analytics } from "@vercel/analytics/next";
 // import { Toaster } from "sonner"; 
 
 // Using standard variables
@@ -60,6 +61,7 @@ export default async function LocaleLayout({
                     {/* <Toaster /> */}
                     <GlobalSchema />
                 </NextIntlClientProvider>
+                <Analytics />
 
                 {/* GA4 Script Holder (Delayed ID) */}
                 {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
